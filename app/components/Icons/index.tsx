@@ -1,0 +1,6 @@
+export * from "./CopyIcon"
+export * from "./MoonIcon"
+export * from "./PlusIcon"
+export * from "./SearchIcon"
+export * from "./StarIcon"
+export * from "./SunIcon"
