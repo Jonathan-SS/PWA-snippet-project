@@ -1,11 +1,11 @@
 const cacheName = "sw-cache-v4"
 
 self.addEventListener("install", () => {
-  console.log("SW Installed")
+    console.log("SW Installed")
 })
 
 self.addEventListener("activate", () => {
-  console.log("SW activated")
+    console.log("SW activated")
 })
 
 // async function handleFetch(event) {
@@ -35,21 +35,57 @@ self.addEventListener("activate", () => {
 // }
 
 self.addEventListener("fetch", (event) => {
-  // handleFetch(event)
+    // handleFetch(event)
 })
 
 async function handleFetch(event) {
-  const cache = await caches.open(cacheName)
-  if (event.request.url.includes("extension")) {
-    return
-  }
+    const cache = await caches.open(cacheName)
+    if (event.request.url.includes("extension")) {
+        return
+    }
 
-  try {
-    const responseFromNetwork = await fetch(event.request)
-    console.log(event.request)
-    await cache.put(event.request, responseFromNetwork)
-    return responseFromNetwork
-  } catch (e) {
-    return cache.match(event.request)
-  }
+    try {
+        const responseFromNetwork = await fetch(event.request)
+        console.log(event.request)
+        await cache.put(event.request, responseFromNetwork)
+        return responseFromNetwork
+    } catch (e) {
+        return cache.match(event.request)
+    }
 }
+
+// The notificationclick event - https://developers.google.com/web/ilt/pwa/introduction-to-push-notifications
+// self.addEventListener('notificationclick', function(e) {
+//   var notification = e.notification;
+//   var primaryKey = notification.data.primaryKey;
+//   var action = e.action;
+
+//   if (action === 'close') {
+//     notification.close();
+//   } else {
+//     clients.openWindow('http://www.example.com');
+//     notification.close();
+//   }
+// });
+
+// Handling the push event in the service worker - https://developers.google.com/web/ilt/pwa/introduction-to-push-notifications
+// self.addEventListener('push', function(e) {
+//   var options = {
+//     body: 'This notification was generated from a push!',
+//     icon: 'images/example.png',
+//     vibrate: [100, 50, 100],
+//     data: {
+//       dateOfArrival: Date.now(),
+//       primaryKey: '2'
+//     },
+//     actions: [
+//       {action: 'explore', title: 'Explore this new world',
+//         icon: 'images/checkmark.png'},
+//       {action: 'close', title: 'Close',
+//         icon: 'images/xmark.png'},
+//     ]
+//   };
+//   e.waitUntil(
+//     self.registration.showNotification('Hello world!', options)
+//   );
+// });

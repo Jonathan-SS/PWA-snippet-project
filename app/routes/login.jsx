@@ -41,7 +41,6 @@ export async function action({ request }) {
         const session = await getSession(request.headers.get("auth-token"))
         session.set("auth-token", user._id)
 
-        console.log("session: ", session.get("auth-token"))
         // return null
         return redirect("/snippets/all", {
             headers: {

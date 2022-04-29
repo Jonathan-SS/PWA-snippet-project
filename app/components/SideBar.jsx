@@ -2,6 +2,7 @@ import { Link, useLoaderData } from "@remix-run/react"
 import { useEffect, useState } from "react"
 
 import DarkmodeButton from "./DarkmodeButton"
+import { SnippieLogo } from "./Icons"
 import LoginButton from "./LoginButton"
 
 export default function SideBar() {
@@ -31,6 +32,7 @@ export default function SideBar() {
             aria-label="sidebar"
         >
             <div className="overflow-y-hidden py-4 rounded mb-auto flex items-center gap-2 md:block">
+                <SnippieLogo />
                 <div className="flex justify-between my-4">
                     <DarkmodeButton />
                     <LoginButton />

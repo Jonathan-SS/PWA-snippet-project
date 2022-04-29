@@ -1,10 +1,10 @@
-import { hydrate } from "react-dom";
-import { RemixBrowser } from "remix";
+import { hydrate } from "react-dom"
+import { RemixBrowser } from "remix"
 
-hydrate(<RemixBrowser />, document);
+hydrate(<RemixBrowser />, document)
 
 if ("serviceWorker" in navigator) {
-  window.addEventListener("load", () => {
-    navigator.serviceWorker.register("/sw.js");
-  });
+    window.addEventListener("load", () => {
+        navigator.serviceWorker.register("/sw.js")
+    })
 }
