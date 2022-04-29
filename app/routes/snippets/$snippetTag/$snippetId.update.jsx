@@ -1,25 +1,25 @@
-import { Form, redirect, json, useActionData, useLoaderData } from "remix";
-import connectDb from "~/db/connectDb.server";
+import connectDb from "~/db/connectDb.server"
+import { Form, json, redirect, useActionData, useLoaderData } from "remix"
 
 export async function loader({ params }) {
-  const db = await connectDb();
-  const snippet = await db.models.Snippet.findById(params.snippetId);
+  const db = await connectDb()
+  const snippet = await db.models.Snippet.findById(params.snippetId)
   if (!snippet) {
     throw new Response(`Couldn't find book with id ${params.snippetId}`, {
       status: 404,
-    });
+    })
   }
-  return json(snippet);
+  return json(snippet)
 }
 
 export async function action({ request }) {
-  const form = await request.formData();
-  const title = form.get("title");
-  const languageTag = form.get("languageTag");
-  const description = form.get("description");
-  const snippet = form.get("snippet");
-  const snippetId = form.get("snippetId");
-  const db = await connectDb();
+  const form = await request.formData()
+  const title = form.get("title")
+  const languageTag = form.get("languageTag")
+  const description = form.get("description")
+  const snippet = form.get("snippet")
+  const snippetId = form.get("snippetId")
+  const db = await connectDb()
 
   try {
     await db.models.Snippet.findOneAndUpdate(
@@ -33,21 +33,21 @@ export async function action({ request }) {
         },
         $currentDate: { lastModified: true },
       }
-    );
+    )
 
-    return redirect(`/snippets/snippet/${snippetId}`);
+    return redirect(`/snippets/snippet/${snippetId}`)
   } catch (error) {
     return json(
       { errors: error.errors, values: Object.fromEntries(form) },
       { status: 400 }
-    );
+    )
   }
 }
 
 export default function CreateSnippet() {
-  const actionData = useActionData();
+  const actionData = useActionData()
 
-  const snippetToUpdate = useLoaderData();
+  const snippetToUpdate = useLoaderData()
   return (
     <div className=" w-full md:w-50-vw lg:ml-25-vw md:ml-30-vw md:pr-10 h-96 md:h-full overflow-y-scroll px-4 md:p-0 fixed scrollbar-hide">
       <h1 className="text-4xl font-bold mb-2  mr-2">Update snippet</h1>
@@ -87,6 +87,22 @@ export default function CreateSnippet() {
           <option value="PHP">PHP</option>
           <option value="CSS">CSS</option>
           <option value="HTML">HTML</option>
+          <option value="java">Java</option>
+          <option value="ruby">Ruby</option>
+          <option value="haskel">Haskel</option>
+          <option value="coffeescript">CoffeeScript</option>
+          <option value="haskell">Haskell</option>
+          <option value="kotlin">Kotlin</option>
+          <option value="dart">Dart</option>
+          <option value="lua">Lua</option>
+          <option value="go">Go</option>
+          <option value="shell">Shell</option>
+          <option value="sql">SQL</option>
+          <option value="perl">Perl</option>
+          <option value="swift">Swift</option>
+          <option value="cs">C#</option>
+          <option value="c++">C++</option>
+          <option value="python">Python</option>
         </select>
         <label
           htmlFor="description"
@@ -142,5 +158,5 @@ export default function CreateSnippet() {
         </button>
       </Form>
     </div>
-  );
+  )
 }

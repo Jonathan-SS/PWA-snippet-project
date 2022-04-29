@@ -1,19 +1,33 @@
-import { Link } from "@remix-run/react";
-import { useEffect, useState } from "react";
-import { MoonIcon, SunIcon } from "~/svg/all";
+import { Link, useLoaderData } from "@remix-run/react"
+import { MoonIcon, SunIcon } from "~/svg/all"
+import { useEffect, useState } from "react"
 
-export default function SideBar() {
-  const [darkMode, setDarkMode] = useState();
+export default function SideBar({ session }) {
+  const [darkMode, setDarkMode] = useState()
+  const [isOnLine, setIsOnLine] = useState(false)
+  const [loggedIn, setLoggedIn] = useState()
+
   function toggleMode() {
-    document.documentElement.classList.toggle("dark");
-    darkMode === true ? setDarkMode(false) : setDarkMode(true);
+    document.documentElement.classList.toggle("dark")
+    darkMode === true ? setDarkMode(false) : setDarkMode(true)
   }
 
   useEffect(() => {
     if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
-      document.documentElement.classList.add("dark");
+      document.documentElement.classList.add("dark")
     }
-  }, []);
+    if (navigator.onLine) {
+      setIsOnLine(true)
+    } else {
+      setIsOnLine(false)
+    }
+    console.log(session)
+    if (session.length > 0) {
+      setLoggedIn(true)
+    } else {
+      setLoggedIn(false)
+    }
+  }, [])
 
   return (
     <aside
@@ -25,15 +39,18 @@ export default function SideBar() {
           {!darkMode ? <MoonIcon /> : <SunIcon />}
         </button>
         <ul className=" flex overflow-x-scroll scrollbar-hide gap-3 md:block md:space-y-2 ">
-          <li>
-            <Link
-              to="/snippets/createSnippet
+          {isOnLine ? (
+            <li>
+              <Link
+                to="/snippets/createSnippet
               "
-              className=" min-w-150-px  flex items-center p-2 text-base font-normal  rounded-lg hover:bg-green-600 bg-green-800 dark:bg-green-800 text-white dark:hover:bg-green-700"
-            >
-              <span className="md:ml-3">Create snippet</span>
-            </Link>
-          </li>
+                className=" min-w-150-px  flex items-center p-2 text-base font-normal  rounded-lg hover:bg-green-600 bg-green-800 dark:bg-green-800 text-white dark:hover:bg-green-700"
+              >
+                <span className="md:ml-3">Create snippet</span>
+              </Link>
+            </li>
+          ) : null}
+
           <li>
             <Link
               to="/snippets/all
@@ -79,8 +96,29 @@ export default function SideBar() {
               <span className="md:ml-3">HTML snippets</span>
             </Link>
           </li>
+
+          <li>
+            {" "}
+            {!loggedIn ? (
+              <Link
+                to="/login
+              "
+                className="min-w-150-px flex items-center p-2 text-base font-normal  rounded-lg hover:bg-blue-600 bg-blue-800 dark:bg-gray-800 text-white dark:hover:bg-gray-700"
+              >
+                <span className="md:ml-3">Login</span>
+              </Link>
+            ) : (
+              <Link
+                to="/logout
+              "
+                className="min-w-150-px flex items-center p-2 text-base font-normal  rounded-lg hover:bg-blue-600 bg-blue-800 dark:bg-gray-800 text-white dark:hover:bg-gray-700"
+              >
+                <span className="md:ml-3">Logout</span>
+              </Link>
+            )}
+          </li>
         </ul>
       </div>
     </aside>
-  );
+  )
 }

@@ -1,6 +1,6 @@
-import { mongoose } from "mongoose";
+import { mongoose } from "mongoose"
 
-const { Schema } = mongoose;
+const { Schema } = mongoose
 
 const snippetSchema = new Schema({
   title: {
@@ -28,7 +28,18 @@ const snippetSchema = new Schema({
   lastModified: {
     type: Date,
   },
-});
+})
+
+const userSchema = new Schema({
+  username: {
+    type: String,
+    required: [true, "Gotta have a username"],
+  },
+  password: {
+    type: String,
+    required: [true, "Gotta have a password"],
+  },
+})
 
 export const models = [
   {
@@ -36,4 +47,9 @@ export const models = [
     schema: snippetSchema,
     collection: "snippets",
   },
-];
+  {
+    name: "user",
+    schema: userSchema,
+    collection: "users",
+  },
+]

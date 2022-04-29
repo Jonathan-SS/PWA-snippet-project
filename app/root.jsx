@@ -1,3 +1,7 @@
+import styles from "~/tailwind.css"
+import highStyles from "highlight.js/styles/atom-one-dark.css"
+import { getSession } from "./sessions.server"
+import { useLoaderData, json } from "remix"
 import {
   Links,
   LiveReload,
@@ -5,10 +9,17 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
-} from "remix";
-import styles from "~/tailwind.css";
-import SideBar from "./components/SideBar";
-import highStyles from "highlight.js/styles/atom-one-dark.css";
+} from "remix"
+
+import SideBar from "./components/SideBar"
+
+export async function loader({ request }) {
+  // const session = await getSession(request.headers.get("Cookie"))
+  // return json({
+  //   userId: session.get("userId"),
+  // })
+  return "r"
+}
 
 export const links = () => [
   {
@@ -61,17 +72,18 @@ export const links = () => [
     rel: "theme-color",
     content: "#ffffff",
   },
-];
+]
 
 export function meta() {
   return {
     charset: "utf-8",
     title: "Remix snippets app",
     viewport: "width=device-width,initial-scale=1",
-  };
+  }
 }
 
 export default function App() {
+  const session = useLoaderData()
   return (
     <html lang="en">
       <head>
@@ -79,7 +91,7 @@ export default function App() {
         <Links />
       </head>
       <body className="dark:bg-gray-900 dark:text-white font-sans">
-        <SideBar />
+        <SideBar session={session} />
         <main className="md:ml-20-vw md:py-8">
           <Outlet />
         </main>
@@ -89,5 +101,5 @@ export default function App() {
         <LiveReload />
       </body>
     </html>
-  );
+  )
 }

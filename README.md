@@ -1,6 +1,23 @@
-# Welcome to Remix!
+# Powerfull Wild Awesome Snipppets App
 
-- [Remix Docs](https://remix.run/docs)
+**App**
+
+- Login and users
+- public/privat snippets,
+- better responsive
+- printable
+- optimization generally.
+
+**PWA**
+
+- **Manifest**
+- _Service Workers (Installable and offline)_
+- _Push Notifications_
+- _HTTP Caching in Remix_
+
+**Push Notification**
+
+- Notification on snippet update
 
 ## Development
 

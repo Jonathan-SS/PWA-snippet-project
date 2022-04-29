@@ -1,50 +1,36 @@
-import { Outlet, useActionData } from "@remix-run/react";
-import { useLoaderData, Form, useParams } from "remix";
-import SnippetListItem from "~/components/SnippetListItem";
-import connectDb from "~/db/connectDb.server.js";
-import { SearchIcon } from "~/svg/all";
+import { Outlet, useActionData } from "@remix-run/react"
+import SnippetListItem from "~/components/SnippetListItem"
+import connectDb from "~/db/connectDb.server.js"
+import { SearchIcon } from "~/svg/all"
+import { Form, useLoaderData, useParams } from "remix"
 
 export async function loader({ params }) {
-  const db = await connectDb();
-  switch (params.snippetTag) {
-    case "all":
-      return await db.models.Snippet.find();
-    case "JavaScript":
-      return await db.models.Snippet.find({ languageTag: "JavaScript" });
+  const db = await connectDb()
 
-    case "TypeScript":
-      return await db.models.Snippet.find({ languageTag: "TypeScript" });
-
-    case "PHP":
-      return await db.models.Snippet.find({ languageTag: "PHP" });
-
-    case "HTML":
-      return await db.models.Snippet.find({ languageTag: "HTML" });
-
-    case "CSS":
-      return await db.models.Snippet.find({ languageTag: "CSS" });
-    default:
-      return await db.models.Snippet.find();
+  if (params.snippetTag === "all") {
+    return await db.models.Snippet.find()
   }
+
+  return await db.models.Snippet.find({ languageTag: params.snippetTag })
 }
 
 export async function action({ request, params }) {
-  const language = String(params.snippetTag);
-  const form = await request.formData();
-  const _action = form.get("_action");
-  const db = await connectDb();
+  const language = String(params.snippetTag)
+  const form = await request.formData()
+  const _action = form.get("_action")
+  const db = await connectDb()
   switch (_action) {
     case "search":
-      const query = form.get("searchQuery");
+      const query = form.get("searchQuery")
       const searchSnippets = await db.models.Snippet.find({
         title: { $regex: new RegExp(query, "i") },
-      });
+      })
 
-      return searchSnippets;
+      return searchSnippets
 
     case "sort":
-      const sortMethod = form.get("sortMethod");
-      let snippets = [];
+      const sortMethod = form.get("sortMethod")
+      let snippets = []
 
       if (sortMethod === "updated") {
         if (!(language === "all")) {
@@ -52,11 +38,11 @@ export async function action({ request, params }) {
             languageTag: language,
           }).sort({
             lastModified: 1,
-          });
+          })
         } else {
           snippets = await db.models.Snippet.find().sort({
             lastModified: 1,
-          });
+          })
         }
       } else if (sortMethod === "added") {
         if (!(language === "all")) {
@@ -64,11 +50,11 @@ export async function action({ request, params }) {
             languageTag: language,
           }).sort({
             dateAdded: 1,
-          });
+          })
         } else {
           snippets = await db.models.Snippet.find().sort({
             dateAdded: 1,
-          });
+          })
         }
       } else if (sortMethod === "title") {
         if (!(language === "all")) {
@@ -76,31 +62,31 @@ export async function action({ request, params }) {
             languageTag: language,
           }).sort({
             title: 1,
-          });
+          })
         } else {
           snippets = await db.models.Snippet.find().sort({
             title: 1,
-          });
+          })
         }
       } else if (sortMethod === "favorites") {
         if (!(language === "all")) {
           snippets = await db.models.Snippet.find({
             languageTag: language,
             favorite: 1,
-          });
+          })
         } else {
-          snippets = await db.models.Snippet.find({ favorite: 1 });
+          snippets = await db.models.Snippet.find({ favorite: 1 })
         }
       }
 
-      return snippets;
+      return snippets
   }
 }
 
 export default function Index() {
-  const snippets = useLoaderData();
-  const actionSnippets = useActionData();
-  const languageTag = useParams().snippetTag;
+  const snippets = useLoaderData()
+  const actionSnippets = useActionData()
+  const languageTag = useParams().snippetTag
 
   return (
     <div className="">
@@ -162,7 +148,7 @@ export default function Index() {
         <Outlet />
       </div>
     </div>
-  );
+  )
 }
 
 export function ErrorBoundary({ error }) {
@@ -170,5 +156,5 @@ export function ErrorBoundary({ error }) {
     <h1 className="text-red-500 font-bold">
       {error.name}: {error.message}
     </h1>
-  );
+  )
 }
