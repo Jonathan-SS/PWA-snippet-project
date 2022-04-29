@@ -9,7 +9,10 @@ export default function DarkmodeButton() {
         darkMode ? setDarkMode(false) : setDarkMode(true)
     }
     return (
-        <button className="mr-3" onClick={toggleMode}>
+        <button
+            className="px-2 rounded-lg hover:bg-blue-600 dark:hover:bg-gray-700"
+            onClick={toggleMode}
+        >
             {!darkMode ? <MoonIcon /> : <SunIcon />}
         </button>
     )

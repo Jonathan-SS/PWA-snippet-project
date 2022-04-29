@@ -697,6 +697,10 @@ Ensure the default browser behavior of the `hidden` attribute.
   gap: 1.25rem;
 }
 
+.gap-2 {
+  gap: 0.5rem;
+}
+
 .overflow-scroll {
   overflow: scroll;
 }
@@ -845,6 +849,10 @@ Ensure the default browser behavior of the `hidden` attribute.
 
 .pb-2 {
   padding-bottom: 0.5rem;
+}
+
+.align-middle {
+  vertical-align: middle;
 }
 
 .font-sans {

@@ -30,7 +30,7 @@ export default function SideBar() {
             className=" h-20 md:my-8 md:fixed md:h-full md:w-20-vw border-r dark:border-gray-700 px-3 "
             aria-label="sidebar"
         >
-            <div className=" overflow-y-hidden py-4 rounded mb-auto flex md:block">
+            <div className="overflow-y-hidden py-4 rounded mb-auto flex items-center gap-2 md:block">
                 <div className="flex justify-between my-4">
                     <DarkmodeButton />
                     <LoginButton />
