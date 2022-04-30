@@ -1,41 +1,55 @@
-const cacheName = "sw-cache-v1.1.4";
+const cacheName = "sw-cache-v1.1.4"
+
 // self.addEventListener("install", () => {
 //     console.log("SW Installed")
 // })
+
 // self.addEventListener("activate", () => {
 //     console.log("SW activated")
 // })
+
 self.addEventListener("fetch", (fetchEvent) => {
-    console.log("fetchEvent: ", fetchEvent);
+    console.log("fetchEvent: ", fetchEvent)
     // Look for an image, check cache othervise fetch and put to cache
     if (fetchEvent.request.destination === "image") {
-        fetchEvent.respondWith((async function () {
-            // Checks cache for requst data
-            const cachedResponse = await caches.match(fetchEvent.request);
-            // If requst data exists return the data as response
-            if (cachedResponse)
-                return cachedResponse;
-            // Fetch requested data, normal behavior
-            const networkResponse = await fetch(fetchEvent.request);
-            // Cache the network respose data
-            const cache = await caches.open(cacheName);
-            cache.put(fetchEvent.request, networkResponse.clone());
-            // Return the network data as response
-            return networkResponse;
-        })());
-        return;
+        fetchEvent.respondWith(
+            (async function () {
+                // Checks cache for requst data
+                const cachedResponse = await caches.match(fetchEvent.request)
+
+                // If requst data exists return the data as response
+                if (cachedResponse) return cachedResponse
+
+                // Fetch requested data, normal behavior
+                const networkResponse = await fetch(fetchEvent.request)
+
+                // Cache the network respose data
+                const cache = await caches.open(cacheName)
+                cache.put(fetchEvent.request, networkResponse.clone())
+
+                // Return the network data as response
+                return networkResponse
+            })()
+        )
+        return
     }
+
     if (fetchEvent.request.method === "POST") {
-        return;
+        return
     }
+
     // If offline, use cache
-    fetchEvent.respondWith(fetch(fetchEvent.request).catch(() => caches.match(fetchEvent.request)));
-});
+    fetchEvent.respondWith(
+        fetch(fetchEvent.request).catch(() => caches.match(fetchEvent.request))
+    )
+})
+
 // The notificationclick event - https://developers.google.com/web/ilt/pwa/introduction-to-push-notifications
 // self.addEventListener('notificationclick', function(e) {
 //   var notification = e.notification;
 //   var primaryKey = notification.data.primaryKey;
 //   var action = e.action;
+
 //   if (action === 'close') {
 //     notification.close();
 //   } else {
@@ -43,6 +57,7 @@ self.addEventListener("fetch", (fetchEvent) => {
 //     notification.close();
 //   }
 // });
+
 // Handling the push event in the service worker - https://developers.google.com/web/ilt/pwa/introduction-to-push-notifications
 // self.addEventListener('push', function(e) {
 //   var options = {
