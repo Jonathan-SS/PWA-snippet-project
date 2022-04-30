@@ -90,9 +90,9 @@ export default function App() {
                 <Meta />
                 <Links />
             </head>
-            <body className="dark:bg-gray-900 dark:text-white font-sans grid grid-flow-col">
+            <body className="h-screen dark:bg-gray-900 dark:text-white font-sans lg:grid lg:grid-cols-5">
                 <SideBar />
-                <main className="md:ml-20-vw md:py-8">
+                <main className="p-4 overflow-hidden md:overflow-auto col-span-4">
                     <Outlet />
                 </main>
 

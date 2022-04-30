@@ -66,7 +66,7 @@ export default function Login() {
     const actionData = useActionData()
 
     return (
-        <div className="overflow-y-scroll h-96 md:h-full w-full px-4 md:w-50-vw fixed scrollbar-hide">
+        <div className="overflow-y-scroll h-96 md:h-full w-full px-4 md:w-50-vw scrollbar-hide">
             <h1 className="text-4xl font-bold mb-2 mr-2">Login</h1>
             <Form method="post">
                 <input

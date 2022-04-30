@@ -53,7 +53,7 @@ export default function CreateSnippet() {
 
     const snippetToUpdate = useLoaderData()
     return (
-        <div className=" w-full md:w-50-vw lg:ml-25-vw md:ml-30-vw md:pr-10 h-96 md:h-full overflow-y-scroll px-4 md:p-0 fixed scrollbar-hide">
+        <div className="overflow-y-scroll px-4 md:p-0 scrollbar-hide">
             <h1 className="text-4xl font-bold mb-2  mr-2">Update snippet</h1>
             <Form method="post">
                 <label htmlFor="title" className="block text-xl font-semibold">

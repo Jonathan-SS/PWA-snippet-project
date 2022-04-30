@@ -57,7 +57,9 @@ export async function action({ request }) {
 export default function BookPage() {
     const snippet = useLoaderData()
     const dateAdded = new Date(snippet.dateAdded)
-    const displayDate = `${dateAdded.getDate()}-${dateAdded.getMonth()}-${dateAdded.getFullYear()}`
+    const displayDate = dateAdded.toLocaleDateString("da-DK", {
+        dateStyle: "long",
+    })
     const [copyState, setCopyState] = useState(false)
     const languageTag = useParams().snippetTag
 
@@ -66,12 +68,12 @@ export default function BookPage() {
     }, [])
 
     return (
-        <div className="w-full md:w-50-vw lg:ml-25-vw md:ml-30-vw md:pr-10  fixed overflow-y-scroll h-4/5 md:h-full md:pb-10 scrollbar-hide">
+        <div className="mt-4 overflow-y-scroll h-4/5 md:h-full md:pb-10 scrollbar-hide flex-shrink basis-4/5 ">
             <div className="flex flex-wrap  items-center">
-                <h1 className="text-4xl font-bold  w-full">{snippet.title}</h1>
-                <div className=" mb-1 flex gap-5 dark:text-gray-500 w-full">
-                    <h3>Date: {displayDate}</h3>
-                    <h3>Language: {snippet.languageTag}</h3>
+                <h1 className="text-4xl font-bold w-full">{snippet.title}</h1>
+                <div className="my-2 flex gap-5 dark:text-gray-400 w-full">
+                    <p>Date: {displayDate}</p>
+                    <p>Language: {snippet.languageTag}</p>
                 </div>
 
                 <Form
@@ -114,7 +116,7 @@ export default function BookPage() {
             <h2 className=" mt-2 text-xl font-semibold">Description</h2>
             <p>{snippet.description}</p>
             <h2 className=" text-xl font-semibold mt-4 mb-2">Snippet</h2>
-            <div className=" relative">
+            <div className="relative">
                 {copyState ? (
                     <button
                         onClick={(e) => {
@@ -132,7 +134,7 @@ export default function BookPage() {
                 ) : null}
 
                 <Highlight
-                    className={`${snippet.languageTag.toLowerCase()}+ rounded-lg p-10 `}
+                    className={`${snippet.languageTag.toLowerCase()}+ rounded-lg p-10 scrollbar-hide`}
                 >
                     {snippet.snippet}
                 </Highlight>

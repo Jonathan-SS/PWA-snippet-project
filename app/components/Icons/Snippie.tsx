@@ -1,10 +1,11 @@
-export function SnippieLogo({ bgFill = "#e2e2e2" }) {
+export function SnippieLogo({ bgFill = "#e2e2e2", ...props }) {
     return (
         <svg
             xmlns="http://www.w3.org/2000/svg"
             width="109.36"
             height="101.965"
             viewBox="0 0 109.36 101.965"
+            {...props}
         >
             <rect
                 width="64"
