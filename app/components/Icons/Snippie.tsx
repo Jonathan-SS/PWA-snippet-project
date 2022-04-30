@@ -18,7 +18,7 @@ export function SnippieLogo({ bgFill = "#e2e2e2", ...props }) {
                 transform="translate(5.142 28.344) rotate(40)"
                 fill="#d38f2a"
                 font-size="42"
-                font-family="Bangers-Regular, Bangers"
+                fontFamily="Bangers-Regular, Bangers"
             >
                 <tspan x="0" y="0">
                     Snippie

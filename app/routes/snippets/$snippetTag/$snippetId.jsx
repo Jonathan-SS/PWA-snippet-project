@@ -92,7 +92,10 @@ export default function BookPage() {
                         value={snippet.favorite}
                     />
                     <button type="submit">
-                        <StarIcon fill={snippet.favorite} />
+                        <StarIcon
+                            fill={snippet.favorite}
+                            className="w-6 h-6 stroke-yellow-500"
+                        />
                     </button>
                 </Form>
                 <Link
@@ -134,7 +137,7 @@ export default function BookPage() {
                 ) : null}
 
                 <Highlight
-                    className={`${snippet.languageTag.toLowerCase()}+ rounded-lg p-10 scrollbar-hide`}
+                    className={`${snippet.languageTag.toLowerCase()}+ rounded-lg scrollbar-hide`}
                 >
                     {snippet.snippet}
                 </Highlight>

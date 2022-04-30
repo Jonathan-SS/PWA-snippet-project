@@ -5,7 +5,7 @@ export default function SnippetListItem({ snippet, languageTag }) {
     const dateAdded = new Date(snippet.dateAdded)
     const displayDate = `${dateAdded.getDate()}-${dateAdded.getMonth()}-${dateAdded.getFullYear()}`
     return (
-        <li className="rounded-lg hover:bg-blue-600  bg-blue-800 dark:bg-gray-800 dark:hover:bg-gray-700 p-3 mb-1 ">
+        <li className="rounded-lg hover:bg-blue-600  bg-blue-800 dark:bg-gray-800 dark:hover:bg-gray-700 p-3 mb-1 min-w-200-px">
             <Link to={`/snippets/${languageTag}/${snippet._id}`}>
                 <h2 className=" text-white text-xl font-semibold">
                     {snippet.title}

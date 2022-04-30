@@ -63,10 +63,13 @@ export default function CreateSnippet() {
     }, [])
 
     return (
-        <div className="  overflow-y-scroll h-96 md:h-full w-full px-4 md:w-50-vw scrollbar-hide ">
+        <div className="overflow-y-scroll max-w-lg scrollbar-hide ">
             <h1 className="text-4xl font-bold mb-2  mr-2">Create snippet</h1>
             <Form method="post">
-                <label htmlFor="title" className="block text-xl font-semibold">
+                <label
+                    htmlFor="title"
+                    className="block pb-2 text-xl font-semibold"
+                >
                     Title
                 </label>
                 {actionData?.errors.title && (
@@ -80,15 +83,16 @@ export default function CreateSnippet() {
                     defaultValue={actionData?.errors.title.value}
                     id="title"
                     className={
-                        actionData?.errors.title
-                            ? "border-2 border-red-500 rounded-lg px-2 dark:bg-gray-700 bg-blue-600 text-white dark:text-black "
-                            : " rounded-lg  px-2 dark:bg-gray-700 bg-blue-600 text-white   "
+                        "w-full min-w-[200px] " +
+                        (actionData?.errors.description
+                            ? "border-2 border-red-500 rounded-lg px-2 dark:bg-gray-700 resize-none bg-blue-600 text-white dark:text-black"
+                            : " rounded-lg  px-2 dark:bg-gray-700 resize-none bg-blue-600 text-white")
                     }
                 />
 
                 <label
                     htmlFor="languageTag"
-                    className="block mt-3 text-xl font-semibold"
+                    className="block mt-3 pb-2 text-xl font-semibold"
                 >
                     Language
                 </label>
@@ -120,7 +124,7 @@ export default function CreateSnippet() {
                 </select>
                 <label
                     htmlFor="description"
-                    className="block mt-3 text-xl font-semibold"
+                    className="block mt-3 text-xl pb-2 font-semibold"
                 >
                     Description
                 </label>
@@ -131,19 +135,21 @@ export default function CreateSnippet() {
                 )}
                 <textarea
                     name="description"
-                    style={{ height: "100px", width: "66%" }}
+                    cols="10"
+                    rows="5"
                     defaultValue={actionData?.errors.description.value}
                     id="description"
                     className={
-                        actionData?.errors.description
-                            ? "border-2 border-red-500 rounded-lg px-2 dark:bg-gray-700 resize-none bg-blue-600 text-white dark:text-black "
-                            : " rounded-lg  px-2 dark:bg-gray-700 resize-none bg-blue-600 text-white  "
+                        "w-full min-w-[200px] " +
+                        (actionData?.errors.description
+                            ? "border-2 border-red-500 rounded-lg px-2 dark:bg-gray-700 resize-none bg-blue-600 text-white dark:text-black"
+                            : " rounded-lg  px-2 dark:bg-gray-700 resize-none bg-blue-600 text-white")
                     }
                 />
 
                 <label
                     htmlFor="snippet"
-                    className="block mt-3 text-xl font-semibold"
+                    className="block mt-3 pb-2 text-xl font-semibold"
                 >
                     Snippet
                 </label>
@@ -156,11 +162,13 @@ export default function CreateSnippet() {
                     name="snippet"
                     defaultValue={actionData?.errors.description.value}
                     id="snippet"
-                    style={{ height: "200px", width: "66%" }}
+                    cols="10"
+                    rows="8"
                     className={
-                        actionData?.errors.description
-                            ? "border-2 border-red-500 rounded-lg px-2 dark:bg-gray-700 resize-none bg-blue-600 text-white dark:text-black "
-                            : " rounded-lg  px-2 dark:bg-gray-700 resize-none bg-blue-600 text-white  "
+                        "w-full min-w-[200px] " +
+                        (actionData?.errors.description
+                            ? "border-2 border-red-500 rounded-lg px-2 dark:bg-gray-700 resize-none bg-blue-600 text-white dark:text-black"
+                            : " rounded-lg  px-2 dark:bg-gray-700 resize-none bg-blue-600 text-white")
                     }
                 />
                 <br />

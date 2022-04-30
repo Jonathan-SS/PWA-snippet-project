@@ -88,11 +88,9 @@ export default function Index() {
     const actionSnippets = useActionData()
     const languageTag = useParams().snippetTag
 
-    function handleChange(event) {}
-
     return (
         <>
-            <div className="border-b md:dark:border-gray-700 mb-4 pb-2">
+            <div className="border-b md:dark:border-gray-700 mb-4 pb-2 ">
                 <div className="flex items-center justify-between">
                     <h1 className="text-2xl font-bold">
                         {languageTag} Snippets
@@ -111,7 +109,7 @@ export default function Index() {
                         <SearchIcon />
                     </button>
                 </Form>
-                <Form method="post" onChange={handleChange}>
+                <Form method="post">
                     <select
                         name="sortMethod"
                         className="dark:text-gray-800 rounded-lg"
@@ -147,9 +145,10 @@ export default function Index() {
                                       languageTag={languageTag}
                                   />
                               ))}
-                        {!actionSnippets && snippets.length === 0 ? (
+
+                        {!actionSnippets && snippets.length === 0 && (
                             <h2>No snippets found</h2>
-                        ) : null}
+                        )}
                     </ul>
                 </div>
                 <Outlet />

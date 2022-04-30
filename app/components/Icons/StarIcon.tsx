@@ -1,7 +1,7 @@
 export function StarIcon({ fill }) {
     return (
         <svg
-            className="w-6 h-6 stroke-yellow-500  "
+            className="w-6 h-6 stroke-yellow-500 "
             fill={fill ? "#eab308" : "none"}
             stroke="currentColor"
             viewBox="0 0 24 24"
