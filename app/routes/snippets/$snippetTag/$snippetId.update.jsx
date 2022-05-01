@@ -47,10 +47,6 @@ export async function action({ request }) {
 export default function CreateSnippet() {
     const actionData = useActionData()
 
-    Notification.requestPermission(function (status) {
-        console.log("Notification permission status:", status)
-    })
-
     const snippetToUpdate = useLoaderData()
     return (
         <div className="overflow-y-scroll px-4 md:p-0 scrollbar-hide">

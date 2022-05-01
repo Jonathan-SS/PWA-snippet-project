@@ -26,41 +26,8 @@ export async function action({ request }) {
     }
 }
 
-function displayNotification() {
-    if (Notification.permission == "granted") {
-        console.log("Display message")
-        navigator.serviceWorker.getRegistration().then(function (reg) {
-            reg.showNotification("Hello world!", {
-                body: "Here is a notification body!",
-                icon: "http://lasseaakjaer.com/food-reduction-app-information-architecture.jpg",
-                vibrate: [100, 50, 100],
-                data: {
-                    dateOfArrival: Date.now(),
-                    primaryKey: 1,
-                },
-                actions: [
-                    {
-                        action: "explore",
-                        title: "Explore this new world",
-                        icon: "images/checkmark.png",
-                    },
-                    {
-                        action: "close",
-                        title: "Close notification",
-                        icon: "images/xmark.png",
-                    },
-                ],
-            })
-        })
-    }
-}
-
 export default function CreateSnippet() {
     const actionData = useActionData()
-
-    useEffect(() => {
-        displayNotification()
-    }, [])
 
     return (
         <div className="overflow-y-scroll max-w-lg scrollbar-hide ">

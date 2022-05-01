@@ -8,7 +8,6 @@ import LoginButton from "./LoginButton"
 export default function SideBar() {
     const [isOnLine, setIsOnLine] = useState(false)
     // const [loggedIn, setLoggedIn] = useState()
-    console.log("isOnLine: ", isOnLine)
 
     React.useEffect(() => {
         setIsOnLine(navigator.onLine)
