@@ -33,6 +33,7 @@ export const action: ActionFunction = async ({ request }) => {
             console.log("pushMessage: ", pushMessage)
 
             // TODO: Filter subscribtions with query
+            // TODO: Set expiration date on subscribtions
             // Fetch subscribtions from database
             const subscribtions = await db.models.Subscribtion.find().select({
                 _id: 0,

@@ -9,7 +9,6 @@ const urlB64ToUint8Array = (base64String) => {
         .replaceAll("-", "+")
         .replaceAll("_", "/")
     const rawData = atob(base64)
-    // const rawData = Buffer.from(base64, "base64")
     const outputArray = new Uint8Array(rawData.length)
     for (let i = 0; i < rawData.length; ++i) {
         outputArray[i] = rawData.charCodeAt(i)
@@ -37,8 +36,11 @@ self.addEventListener("activate", async () => {
     try {
         const VAPID_PUBLIC_KEY =
             "BEApaM42xO4ckE_i6WH0SPyfAXWPtZJncv4d_foykgnhTGMaLsbmXOWdldaj7YTy4NJIzPdq4jO6Jl2lME_fg_E"
-        const applicationServerKey = urlB64ToUint8Array(VAPID_PUBLIC_KEY)
-        const options = { applicationServerKey, userVisibleOnly: true }
+        // const applicationServerKey = urlB64ToUint8Array(VAPID_PUBLIC_KEY)
+        const options = {
+            applicationServerKey: VAPID_PUBLIC_KEY,
+            userVisibleOnly: true,
+        }
         const subscribtion =
             await self.registration.pushManager.getSubscription()
         if (subscribtion === null) {
@@ -107,9 +109,7 @@ self.addEventListener("notificationclick", (e) => {
 // Handling the push event in the service worker - https://developers.google.com/web/ilt/pwa/introduction-to-push-notifications
 self.addEventListener("push", function (e) {
     const pushMessage = JSON.parse(e.data.text())
-    console.log("pushMessage: ", pushMessage)
-    // const pushMessage = JSON.parse(e.data.text())
-    // console.log("pushMessage: ", pushMessage)
+
     var options = {
         body: pushMessage.body,
         icon: "snippie-logo.png",
