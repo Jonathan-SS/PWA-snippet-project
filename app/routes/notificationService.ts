@@ -1,5 +1,5 @@
 import connectDb from "~/db/connectDb.server"
-import { ActionFunction, json } from "remix"
+import { ActionFunction, LoaderFunction, json } from "remix"
 import webpush from "web-push"
 
 //setting our previously generated VAPID keys
@@ -11,7 +11,6 @@ webpush.setVapidDetails(
 
 //function to send the notification to the subscribed device
 const sendNotification = async (subscription, dataToSend) => {
-    console.log("dataToSend: ", dataToSend)
     try {
         webpush.sendNotification(subscription, JSON.stringify(dataToSend))
     } catch (error) {
@@ -30,8 +29,8 @@ export const action: ActionFunction = async ({ request }) => {
                 message: "Subscribtions deleted",
             })
         case "POST":
-            // const notificationEventData = request ? await request.json() : null
-            // console.log("notificationEventData: ", notificationEventData)
+            const pushMessage = await request.json()
+            console.log("pushMessage: ", pushMessage)
 
             // TODO: Filter subscribtions with query
             // Fetch subscribtions from database
@@ -42,7 +41,7 @@ export const action: ActionFunction = async ({ request }) => {
 
             // Send notification to all subscribtions
             subscribtions.forEach((subscribtion) => {
-                sendNotification(subscribtion, "Hello World")
+                sendNotification(subscribtion, pushMessage)
             })
 
             return json({
@@ -51,4 +50,18 @@ export const action: ActionFunction = async ({ request }) => {
                 subscribtions,
             })
     }
+}
+
+export const loader: LoaderFunction = async () => {
+    const db = await connectDb()
+    const subscribtions = await db.models.Subscribtion.find().select({
+        _id: 0,
+        __v: 0,
+    })
+
+    return json({
+        status: 200,
+        message: "Message sent",
+        subscribtions,
+    })
 }

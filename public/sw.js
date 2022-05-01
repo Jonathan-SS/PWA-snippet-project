@@ -88,40 +88,44 @@ self.addEventListener("fetch", (fetchEvent) => {
 })
 
 // The notificationclick event - https://developers.google.com/web/ilt/pwa/introduction-to-push-notifications
-// self.addEventListener('notificationclick', function(e) {
-//   var notification = e.notification;
-//   var primaryKey = notification.data.primaryKey;
-//   var action = e.action;
+self.addEventListener("notificationclick", (e) => {
+    const notification = e.notification
+    const href = notification.data.href
+    const action = e.action
 
-//   if (action === 'close') {
-//     notification.close();
-//   } else {
-//     clients.openWindow('http://www.example.com');
-//     notification.close();
-//   }
-// });
+    switch (action) {
+        case "explore":
+            clients.openWindow(href)
+            notification.close()
+            break
+        default:
+            notification.close()
+            break
+    }
+})
 
 // Handling the push event in the service worker - https://developers.google.com/web/ilt/pwa/introduction-to-push-notifications
 self.addEventListener("push", function (e) {
-    const pushMessage = e.data.text()
+    const pushMessage = JSON.parse(e.data.text())
+    console.log("pushMessage: ", pushMessage)
     // const pushMessage = JSON.parse(e.data.text())
     // console.log("pushMessage: ", pushMessage)
     var options = {
-        body: "Hello World tets test",
+        body: pushMessage.body,
         icon: "snippie-logo.png",
         vibrate: [100, 50, 100],
-        // data: {
-        //     dateOfArrival: Date.now(),
-        //     primaryKey: "2",
-        // },
-        // actions: [
-        //     {
-        //         action: "explore",
-        //         title: "Explore the changes",
-        //         icon: "images/checkmark.png",
-        //     },
-        //     { action: "close", title: "Close", icon: "images/xmark.png" },
-        // ],
+        data: {
+            dateOfArrival: Date.now(),
+            href: pushMessage.href,
+        },
+        actions: [
+            {
+                action: "explore",
+                title: "Explore the changes",
+                icon: "snippie-logo.png",
+            },
+            { action: "close", title: "Close", icon: "snippie-logo.png" },
+        ],
     }
-    e.waitUntil(self.registration.showNotification(pushMessage, options))
+    e.waitUntil(self.registration.showNotification(pushMessage.title, options))
 })

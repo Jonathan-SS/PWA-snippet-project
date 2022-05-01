@@ -44,17 +44,17 @@ export async function action({ request }) {
         )
 
         // Sendt push notification, snippet has been updated
-        // const response = await fetch("localhost:3000/notificationService", {
-        //     method: "POST",
-        //     headers: {
-        //         "Content-Type": "application/json",
-        //     },
-        //     body: JSON.stringify({
-        //         title: "Snippet has been updated",
-        //         message: `${updatedSnippet.title} has been updated`,
-        //     }),
-        // })
-        // console.log("response: ", response)
+        await fetch("http://localhost:3000/notificationService", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                title: `${title} has been updated`,
+                body: `Language ${languageTag}`,
+                href: `/snippets/snippet/${snippetId}`,
+            }),
+        })
 
         return redirect(`/snippets/snippet/${snippetId}`)
     } catch (error) {
@@ -67,28 +67,12 @@ export async function action({ request }) {
 
 export default function CreateSnippet() {
     const actionData = useActionData()
-    const submit = useSubmit()
-
-    async function handleSubmit(event) {
-        submit(event.currentTarget, { replace: true })
-        // Sendt push notification, snippet has been updated
-        await fetch("/notificationService", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                title: "Snippet has been updated",
-                message: `Snippet has been updated`,
-            }),
-        })
-    }
 
     const snippetToUpdate = useLoaderData()
     return (
         <div className="overflow-y-scroll px-4 md:p-0 scrollbar-hide">
             <h1 className="text-4xl font-bold mb-2  mr-2">Update snippet</h1>
-            <Form method="post" onSubmit={handleSubmit}>
+            <Form method="post">
                 <label htmlFor="title" className="block text-xl font-semibold">
                     Title
                 </label>
