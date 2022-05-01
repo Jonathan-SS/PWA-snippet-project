@@ -8,7 +8,6 @@ const urlB64ToUint8Array = (base64String) => {
     const base64 = (base64String + padding)
         .replaceAll("-", "+")
         .replaceAll("_", "/")
-    console.log("base64: ", base64)
     const rawData = atob(base64)
     // const rawData = Buffer.from(base64, "base64")
     const outputArray = new Uint8Array(rawData.length)
@@ -35,17 +34,19 @@ const saveSubscription = async (subscription) => {
 
 self.addEventListener("activate", async () => {
     // This will be called only once when the service worker is activated.
-    const publicKey =
-        "BEApaM42xO4ckE_i6WH0SPyfAXWPtZJncv4d_foykgnhTGMaLsbmXOWdldaj7YTy4NJIzPdq4jO6Jl2lME_fg_E"
     try {
-        const applicationServerKey = urlB64ToUint8Array(publicKey)
+        const VAPID_PUBLIC_KEY =
+            "BEApaM42xO4ckE_i6WH0SPyfAXWPtZJncv4d_foykgnhTGMaLsbmXOWdldaj7YTy4NJIzPdq4jO6Jl2lME_fg_E"
+        const applicationServerKey = urlB64ToUint8Array(VAPID_PUBLIC_KEY)
         const options = { applicationServerKey, userVisibleOnly: true }
-        const subscription = await self.registration.pushManager.subscribe(
-            options
-        )
-        console.log("subscription: ", subscription)
-        const response = await saveSubscription(subscription)
-        console.log(response)
+        const subscribtion =
+            await self.registration.pushManager.getSubscription()
+        if (subscribtion === null) {
+            const subscription = await self.registration.pushManager.subscribe(
+                options
+            )
+            await saveSubscription(subscription)
+        }
     } catch (err) {
         console.log("Error", err)
     }
@@ -102,23 +103,25 @@ self.addEventListener("fetch", (fetchEvent) => {
 
 // Handling the push event in the service worker - https://developers.google.com/web/ilt/pwa/introduction-to-push-notifications
 self.addEventListener("push", function (e) {
-    console.log("Push event: ", e)
+    const pushMessage = e.data.text()
+    // const pushMessage = JSON.parse(e.data.text())
+    // console.log("pushMessage: ", pushMessage)
     var options = {
-        body: "This notification was generated from a push!",
-        icon: "images/example.png",
+        body: "Hello World tets test",
+        icon: "snippie-logo.png",
         vibrate: [100, 50, 100],
-        data: {
-            dateOfArrival: Date.now(),
-            primaryKey: "2",
-        },
-        actions: [
-            {
-                action: "explore",
-                title: "Explore this new world",
-                icon: "images/checkmark.png",
-            },
-            { action: "close", title: "Close", icon: "images/xmark.png" },
-        ],
+        // data: {
+        //     dateOfArrival: Date.now(),
+        //     primaryKey: "2",
+        // },
+        // actions: [
+        //     {
+        //         action: "explore",
+        //         title: "Explore the changes",
+        //         icon: "images/checkmark.png",
+        //     },
+        //     { action: "close", title: "Close", icon: "images/xmark.png" },
+        // ],
     }
-    e.waitUntil(self.registration.showNotification("Hello world!", options))
+    e.waitUntil(self.registration.showNotification(pushMessage, options))
 })

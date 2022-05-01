@@ -1,9 +1,5 @@
 import { useEffect, useState } from "react"
 
-function action() {
-    const privateKey = "ibeRLO6Pwxaga8OH_YKTDDKUX8OqPMlCQxMUpFLA754"
-}
-
 function displayNotification() {
     if (Notification.permission == "granted") {
         console.log("Display message")
