@@ -9,13 +9,24 @@ const urlB64ToUint8Array = (base64String) => {
         .replaceAll("-", "+")
         .replaceAll("_", "/")
     console.log("base64: ", base64)
-    const rawData = Buffer.from(base64, "base64")
-    console.log("rawData: ", rawData)
+    const rawData = atob(base64)
+    // const rawData = Buffer.from(base64, "base64")
     const outputArray = new Uint8Array(rawData.length)
     for (let i = 0; i < rawData.length; ++i) {
         outputArray[i] = rawData.charCodeAt(i)
     }
     return outputArray
+}
+
+const saveSubscription = async (subscription) => {
+    const SERVER_URL = `${location.origin}/subscribtionService`
+    return fetch(SERVER_URL, {
+        method: "post",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(subscription),
+    })
 }
 
 // self.addEventListener("install", () => {
@@ -32,7 +43,9 @@ self.addEventListener("activate", async () => {
         const subscription = await self.registration.pushManager.subscribe(
             options
         )
-        console.log(JSON.stringify(subscription))
+        console.log("subscription: ", subscription)
+        const response = await saveSubscription(subscription)
+        console.log(response)
     } catch (err) {
         console.log("Error", err)
     }

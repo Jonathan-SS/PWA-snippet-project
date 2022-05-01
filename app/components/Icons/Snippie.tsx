@@ -1,3 +1,5 @@
+import React from "react"
+
 export function SnippieLogo({ bgFill = "#e2e2e2", ...props }) {
     return (
         <svg

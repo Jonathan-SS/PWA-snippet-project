@@ -43,6 +43,17 @@ async function useNotifcation() {
         })
     }, [])
 
+    const saveSubscription = async (subscription) => {
+        const SERVER_URL = `${location.origin}/subscribtionService`
+        return fetch(SERVER_URL, {
+            method: "post",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(subscription),
+        })
+    }
+
     // Subcribe to push service from client
     const registration = await navigator.serviceWorker.getRegistration()
     const pushSubcribtion = await registration.pushManager.subscribe({
@@ -73,6 +84,10 @@ async function useNotifcation() {
             .catch(function (err) {
                 console.log("Service Worker registration failed: ", err)
             })
+    }
+
+    return {
+        saveSubscription,
     }
 }
 // https://developers.google.com/web/ilt/pwa/introduction-to-push-notifications
