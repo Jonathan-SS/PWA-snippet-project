@@ -28,6 +28,10 @@ const snippetSchema = new Schema({
     lastModified: {
         type: Date,
     },
+    subscribers: {
+        type: Array,
+        default: [],
+    },
 })
 
 const userSchema = new Schema({

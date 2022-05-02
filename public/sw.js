@@ -27,9 +27,9 @@ const saveSubscription = async (subscription) => {
     })
 }
 
-// self.addEventListener("install", () => {
-//     console.log("SW Installed")
-// })
+self.addEventListener("install", () => {
+    console.log("SW Installed")
+})
 
 self.addEventListener("activate", async () => {
     // This will be called only once when the service worker is activated.
