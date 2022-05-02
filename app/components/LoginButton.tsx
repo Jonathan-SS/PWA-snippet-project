@@ -1,21 +1,29 @@
-import { Link } from "remix"
+import { Form, Link } from "remix"
+import { useAccount } from "../hooks/useAccount"
 
 const LoginButtonStyle =
     "p-2 font-normal rounded-lg hover:bg-blue-600 hover:text-white dark:hover:bg-gray-700"
 export default function LoginButton() {
-    const loggedIn = true
+    const loggedIn = useAccount()
+    console.log(loggedIn)
 
     if (loggedIn) {
         return (
-            <Link to="/logout" className={LoginButtonStyle}>
-                Logout
+            <Form method="post" action="/logout" reloadDocument>
+                <button
+                    type="submit"
+                    name="logout"
+                    className={LoginButtonStyle}
+                >
+                    Logout
+                </button>
+            </Form>
+        )
+    } else {
+        return (
+            <Link to="/login" className={LoginButtonStyle}>
+                Login
             </Link>
         )
     }
-
-    return (
-        <Link to="/login" className={LoginButtonStyle}>
-            Login
-        </Link>
-    )
 }

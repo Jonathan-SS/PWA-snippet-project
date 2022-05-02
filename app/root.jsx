@@ -1,6 +1,5 @@
 import styles from "~/tailwind.css"
 import highStyles from "highlight.js/styles/atom-one-dark.css"
-import { json, useLoaderData } from "remix"
 import {
     Links,
     LiveReload,
@@ -11,15 +10,6 @@ import {
 } from "remix"
 
 import SideBar from "./components/SideBar"
-import { getSession } from "./sessions.server"
-
-export async function loader({ request }) {
-    // const session = await getSession(request.headers.get("Cookie"))
-    // return json({
-    //   userId: session.get("userId"),
-    // })
-    return "r"
-}
 
 export const links = () => [
     {
@@ -83,7 +73,6 @@ export function meta() {
 }
 
 export default function App() {
-    // const session = useLoaderData()
     return (
         <html lang="en" className="dark">
             <head>

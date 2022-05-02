@@ -2,37 +2,47 @@ import { mongoose } from "mongoose"
 
 const { Schema } = mongoose
 
-const snippetSchema = new Schema({
-    title: {
-        type: String,
-        required: true,
-        minLength: [5, "Too short, minimum 5 characters"],
+const snippetSchema = new Schema(
+    {
+        title: {
+            type: String,
+            required: true,
+            minLength: [5, "Too short, minimum 5 characters"],
+        },
+        languageTag: String,
+        snippet: {
+            type: String,
+            required: [true, "Missing snippet"],
+        },
+        description: {
+            type: String,
+            required: [true, "Missing description"],
+        },
+        favorite: {
+            type: Boolean,
+            default: false,
+        },
+        dateAdded: {
+            type: Date,
+            default: Date.now,
+        },
+        lastModified: {
+            type: Date,
+        },
+        visibility: {
+            type: String,
+            required: [true, "Missing visibility"],
+        },
+        userId: {
+            type: String,
+        },
+        subscribers: {
+            type: Array,
+            default: [],
+        },
     },
-    languageTag: String,
-    snippet: {
-        type: String,
-        required: [true, "Missing snippet"],
-    },
-    description: {
-        type: String,
-        required: [true, "Missing description"],
-    },
-    favorite: {
-        type: Boolean,
-        default: false,
-    },
-    dateAdded: {
-        type: Date,
-        default: Date.now,
-    },
-    lastModified: {
-        type: Date,
-    },
-    subscribers: {
-        type: Array,
-        default: [],
-    },
-})
+    { timestamps: true }
+)
 
 const userSchema = new Schema({
     username: {
@@ -44,7 +54,7 @@ const userSchema = new Schema({
         required: [true, "Gotta have a password"],
     },
 })
-const subscribtionSchema = new Schema({
+const subscriptionSchema = new Schema({
     endpoint: String,
     expirationTime: String,
     keys: {
@@ -65,8 +75,8 @@ export const models = [
         collection: "users",
     },
     {
-        name: "Subscribtion",
-        schema: subscribtionSchema,
-        collection: "subscribtions",
+        name: "Subscription",
+        schema: subscriptionSchema,
+        collection: "subscriptions",
     },
 ]

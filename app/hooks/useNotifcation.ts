@@ -40,7 +40,7 @@ async function useNotifcation() {
     }, [])
 
     const saveSubscription = async (subscription) => {
-        const SERVER_URL = `${location.origin}/subscribtionService`
+        const SERVER_URL = `${location.origin}/subscriptionService`
         return fetch(SERVER_URL, {
             method: "post",
             headers: {
