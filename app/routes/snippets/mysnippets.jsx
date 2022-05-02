@@ -1,35 +1,31 @@
 import { Outlet, useActionData } from "@remix-run/react"
+import { useLoaderData, Form } from "remix"
 import { SearchIcon } from "~/components/Icons"
 import SnippetListItem from "~/components/SnippetListItem"
 import connectDb from "~/db/connectDb.server.js"
-import { Form, useLoaderData, useParams } from "remix"
+import { requireUserSession, getUserSession } from "../../sessions.server.js"
 
-export async function loader({ params }) {
+export async function loader({ request }) {
+    await requireUserSession(request)
     const db = await connectDb()
-
-    if (params.snippetTag === "all") {
-        return await db.models.Snippet.find({
-            visibility: "Public",
-        })
-    }
+    const session = await getUserSession(request.headers.get("Cookie"))
 
     return await db.models.Snippet.find({
-        languageTag: params.snippetTag,
-        visibility: "Public",
+        userId: session.get("userId"),
     })
 }
 
-export async function action({ request, params }) {
-    const language = String(params.snippetTag)
+export async function action({ request }) {
     const form = await request.formData()
     const _action = form.get("_action")
+    const session = await getUserSession(request.headers.get("Cookie"))
     const db = await connectDb()
     switch (_action) {
         case "search":
             const query = form.get("searchQuery")
             const searchSnippets = await db.models.Snippet.find({
+                userId: session.get("userId"),
                 title: { $regex: new RegExp(query, "i") },
-                visibility: "Public",
             })
 
             return searchSnippets
@@ -39,81 +35,45 @@ export async function action({ request, params }) {
             let snippets = []
 
             if (sortMethod === "updated") {
-                if (!(language === "all")) {
-                    snippets = await db.models.Snippet.find({
-                        visibility: "Public",
-                        languageTag: language,
-                    }).sort({
-                        lastModified: 1,
-                    })
-                } else {
-                    snippets = await db.models.Snippet.find({
-                        visibility: "Public",
-                    }).sort({
-                        lastModified: 1,
-                    })
-                }
+                snippets = await db.models.Snippet.find({
+                    userId: session.get("userId"),
+                }).sort({
+                    lastModified: 1,
+                })
             } else if (sortMethod === "added") {
-                if (!(language === "all")) {
-                    snippets = await db.models.Snippet.find({
-                        visibility: "Public",
-                        languageTag: language,
-                    }).sort({
-                        dateAdded: 1,
-                    })
-                } else {
-                    snippets = await db.models.Snippet.find({
-                        visibility: "Public",
-                    }).sort({
-                        dateAdded: 1,
-                    })
-                }
+                snippets = await db.models.Snippet.find({
+                    userId: session.get("userId"),
+                }).sort({
+                    dateAdded: 1,
+                })
             } else if (sortMethod === "title") {
-                if (!(language === "all")) {
-                    snippets = await db.models.Snippet.find({
-                        visibility: "Public",
-                        languageTag: language,
-                    }).sort({
-                        title: 1,
-                    })
-                } else {
-                    snippets = await db.models.Snippet.find({
-                        visibility: "Public",
-                    }).sort({
-                        title: 1,
-                    })
-                }
+                snippets = await db.models.Snippet.find({
+                    userId: session.get("userId"),
+                }).sort({
+                    title: 1,
+                })
             } else if (sortMethod === "favorites") {
-                if (!(language === "all")) {
-                    snippets = await db.models.Snippet.find({
-                        visibility: "Public",
-                        languageTag: language,
-                        favorite: 1,
-                    })
-                } else {
-                    snippets = await db.models.Snippet.find({
-                        visibility: "Public",
-                        favorite: 1,
-                    })
-                }
+                snippets = await db.models.Snippet.find({
+                    userId: session.get("userId"),
+                    favorite: 1,
+                })
+            } else {
+                snippets = await db.models.Snippet.find({
+                    userId: session.get("userId"),
+                })
             }
-
             return snippets
     }
 }
-
-export default function Index() {
+export default function MySnippets() {
     const snippets = useLoaderData()
     const actionSnippets = useActionData()
-    const languageTag = useParams().snippetTag
 
     return (
         <>
             <div className="border-b md:dark:border-gray-700 mb-4 pb-2 ">
                 <div className="flex items-center justify-between">
-                    <h1 className="text-2xl font-bold">
-                        {languageTag} Snippets
-                    </h1>
+                    <h1 className="text-2xl font-bold">My snippets</h1>
                 </div>
 
                 <Form method="post" className="flex my-2">
@@ -133,6 +93,7 @@ export default function Index() {
                         name="sortMethod"
                         className="dark:text-gray-800 rounded-lg"
                     >
+                        <option value="all">All my snippets</option>
                         <option value="updated">Last updated</option>
                         <option value="title">Title</option>
                         <option value="favorites">Favorites</option>
@@ -161,7 +122,6 @@ export default function Index() {
                                   <SnippetListItem
                                       key={snippet._id}
                                       snippet={snippet}
-                                      languageTag={languageTag}
                                   />
                               ))}
 

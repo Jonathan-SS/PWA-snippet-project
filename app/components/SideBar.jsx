@@ -1,14 +1,14 @@
-import { Link, useLoaderData } from "@remix-run/react"
+import { Link } from "@remix-run/react"
 import { useEffect, useState } from "react"
 
 import DarkmodeButton from "./DarkmodeButton"
 import { SnippieLogo } from "./Icons"
 import LoginButton from "./LoginButton"
+import { useAccount } from "../hooks/useAccount"
 
 export default function SideBar() {
     const [isOnLine, setIsOnLine] = useState(false)
-
-    // const [loggedIn, setLoggedIn] = useState()
+    const loggedIn = useAccount()
 
     React.useEffect(() => {
         setIsOnLine(navigator.onLine)
@@ -18,13 +18,6 @@ export default function SideBar() {
         if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
             document.documentElement.classList.add("dark")
         }
-
-        // console.log(session)
-        // if (session.length > 0) {
-        //     setLoggedIn(true)
-        // } else {
-        //     setLoggedIn(false)
-        // }
     }, [])
 
     return (
@@ -48,6 +41,17 @@ export default function SideBar() {
                                 className="flex items-center p-2 text-base font-normal rounded-lg hover:bg-green-600 bg-green-800 dark:bg-green-800 text-white dark:hover:bg-green-700"
                             >
                                 Create snippet
+                            </Link>
+                        </li>
+                    )}
+
+                    {loggedIn && (
+                        <li>
+                            <Link
+                                to="/snippets/mysnippets"
+                                className="flex items-center p-2 text-base font-normal rounded-lg hover:bg-green-600 bg-green-800 dark:bg-green-800 text-white dark:hover:bg-green-700"
+                            >
+                                My snippets
                             </Link>
                         </li>
                     )}
