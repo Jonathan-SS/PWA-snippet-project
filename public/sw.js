@@ -17,7 +17,7 @@ const urlB64ToUint8Array = (base64String) => {
 }
 
 const saveSubscription = async (subscription) => {
-    const SERVER_URL = `${location.origin}/subscribtionService`
+    const SERVER_URL = `${location.origin}/subscriptionService`
     return fetch(SERVER_URL, {
         method: "post",
         headers: {
@@ -27,9 +27,9 @@ const saveSubscription = async (subscription) => {
     })
 }
 
-// self.addEventListener("install", () => {
-//     console.log("SW Installed")
-// })
+self.addEventListener("install", () => {
+    console.log("SW Installed")
+})
 
 self.addEventListener("activate", async () => {
     // This will be called only once when the service worker is activated.
@@ -41,13 +41,11 @@ self.addEventListener("activate", async () => {
             applicationServerKey: VAPID_PUBLIC_KEY,
             userVisibleOnly: true,
         }
-        const subscribtion =
+        const subscription =
             await self.registration.pushManager.getSubscription()
-        if (subscribtion === null) {
-            const subscription = await self.registration.pushManager.subscribe(
-                options
-            )
-            await saveSubscription(subscription)
+        if (subscription === null) {
+            const sub = await self.registration.pushManager.subscribe(options)
+            await saveSubscription(sub)
         }
     } catch (err) {
         console.log("Error", err)

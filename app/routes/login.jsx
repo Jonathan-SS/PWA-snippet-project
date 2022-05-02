@@ -79,18 +79,18 @@ export default function Login() {
                     >
                         Username
                     </label>
-                    {actionData?.errors.username && (
+                    {actionData && actionData.errors?.username && (
                         <p className="text-red-500">
-                            {actionData?.errors.username.message}
+                            {actionData.errors.username.message}
                         </p>
                     )}
                     <input
                         type="text"
                         id="username-input"
                         name="username"
-                        defaultValue={actionData?.values?.username}
+                        defaultValue=""
                         className={
-                            actionData?.errors.username
+                            actionData && actionData.errors?.username
                                 ? inputErrorStyles
                                 : "rounded-lg  px-2 dark:bg-gray-700 bg-blue-600 text-white   "
                         }
@@ -103,9 +103,9 @@ export default function Login() {
                     >
                         Password
                     </label>
-                    {actionData?.errors.password && (
+                    {actionData && actionData.errors?.password && (
                         <p className="text-red-500">
-                            {actionData?.errors.password.message}
+                            {actionData.errors.password.message}
                         </p>
                     )}
                     <input
@@ -113,9 +113,8 @@ export default function Login() {
                         name="password"
                         type="password"
                         required
-                        defaultValue={actionData?.values?.password}
                         className={
-                            actionData?.errors.password
+                            actionData && actionData.errors?.password
                                 ? inputErrorStyles
                                 : " rounded-lg  px-2 dark:bg-gray-700 bg-blue-600 text-white   "
                         }

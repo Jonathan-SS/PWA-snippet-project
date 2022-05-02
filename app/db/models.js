@@ -36,6 +36,10 @@ const snippetSchema = new Schema(
         userId: {
             type: String,
         },
+        subscribers: {
+            type: Array,
+            default: [],
+        },
     },
     { timestamps: true }
 )
@@ -49,13 +53,13 @@ const userSchema = new Schema({
         type: String,
         required: [true, "Gotta have a password"],
     },
-})
-const subscribtionSchema = new Schema({
-    endpoint: String,
-    expirationTime: String,
-    keys: {
-        p256dh: String,
-        auth: String,
+    subscription: {
+        endpoint: String,
+        expirationTime: String,
+        keys: {
+            p256dh: String,
+            auth: String,
+        },
     },
 })
 
@@ -69,10 +73,5 @@ export const models = [
         name: "user",
         schema: userSchema,
         collection: "users",
-    },
-    {
-        name: "Subscribtion",
-        schema: subscribtionSchema,
-        collection: "subscribtions",
     },
 ]
