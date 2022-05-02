@@ -1,3 +1,5 @@
+import React from "react"
+
 export function SunIcon() {
     return (
         <svg

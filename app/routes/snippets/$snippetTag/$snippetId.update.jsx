@@ -1,5 +1,12 @@
 import connectDb from "~/db/connectDb.server"
-import { Form, json, redirect, useActionData, useLoaderData } from "remix"
+import {
+    Form,
+    json,
+    redirect,
+    useActionData,
+    useLoaderData,
+    useSubmit,
+} from "remix"
 
 export async function loader({ params }) {
     const db = await connectDb()
@@ -14,6 +21,7 @@ export async function loader({ params }) {
 
 export async function action({ request }) {
     const form = await request.formData()
+
     const title = form.get("title")
     const languageTag = form.get("languageTag")
     const description = form.get("description")
@@ -35,6 +43,19 @@ export async function action({ request }) {
             }
         )
 
+        // Sendt push notification, snippet has been updated
+        await fetch("http://localhost:3000/notificationService", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                title: `${title} has been updated`,
+                body: `Language ${languageTag}`,
+                href: `/snippets/snippet/${snippetId}`,
+            }),
+        })
+
         return redirect(`/snippets/snippet/${snippetId}`)
     } catch (error) {
         return json(
@@ -47,10 +68,6 @@ export async function action({ request }) {
 export default function CreateSnippet() {
     const actionData = useActionData()
 
-    Notification.requestPermission(function (status) {
-        console.log("Notification permission status:", status)
-    })
-
     const snippetToUpdate = useLoaderData()
     return (
         <div className="overflow-y-scroll px-4 md:p-0 scrollbar-hide">
@@ -59,7 +76,7 @@ export default function CreateSnippet() {
                 <label htmlFor="title" className="block text-xl font-semibold">
                     Title
                 </label>
-                {actionData?.errors.title && (
+                {actionData && actionData.errors?.title && (
                     <p className="text-red-500">
                         {actionData?.errors.title.message}
                     </p>
@@ -71,7 +88,7 @@ export default function CreateSnippet() {
                     style={{ width: "66%" }}
                     id="title"
                     className={
-                        actionData?.errors.title
+                        actionData && actionData.errors?.title
                             ? "border-2 border-red-500 rounded-lg px-2 bg-blue-600 text-white dark:text-black dark:bg-gray-700"
                             : " rounded-lg px-2 bg-blue-600 text-white   dark:bg-gray-700"
                     }
@@ -123,7 +140,7 @@ export default function CreateSnippet() {
                     defaultValue={snippetToUpdate.description}
                     id="description"
                     className={
-                        actionData?.errors.description
+                        actionData && actionData.errors?.description
                             ? "border-2 border-red-500 rounded-lg px-2 dark:bg-gray-700 resize-none bg-blue-600 text-white dark:text-black "
                             : " rounded-lg  px-2 dark:bg-gray-700 resize-none bg-blue-600 text-white  "
                     }
@@ -147,12 +164,12 @@ export default function CreateSnippet() {
                     id="snippet"
                     style={{ height: "200px", width: "66%" }}
                     className={
-                        actionData?.errors.description
+                        actionData && actionData.errors?.description
                             ? "border-2 border-red-500 rounded-lg px-2 dark:bg-gray-700 resize-none bg-blue-600 text-white dark:text-black "
                             : " rounded-lg  px-2 dark:bg-gray-700 resize-none bg-blue-600 text-white "
                     }
                 />
-                {actionData?.description && (
+                {actionData && actionData.errors?.description && (
                     <p className="text-red-500">
                         {actionData?.errors.description.message}
                     </p>
