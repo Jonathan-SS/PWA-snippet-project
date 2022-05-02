@@ -2,7 +2,7 @@ import connectDb from "~/db/connectDb.server"
 import bcrypt from "bcryptjs"
 import { Form, json, redirect } from "remix"
 
-import { commitSession, getSession } from "../sessions.server.js"
+import { commitUserSession, getUserSession } from "../sessions.server.js"
 
 export async function action({ request }) {
     const form = await request.formData()
@@ -15,13 +15,13 @@ export async function action({ request }) {
             password,
         })
         console.log(user)
-        const session = await getSession(request.headers.get("Cookie"))
+        const session = await getUserSession(request.headers.get("Cookie"))
         session.set("userId", user.id)
 
         return redirect("/snippets/all", {
             headers: {
                 status: 200,
-                "Set-Cookie": await commitSession(session),
+                "Set-Cookie": await commitUserSession(session),
             },
         })
     } catch (error) {

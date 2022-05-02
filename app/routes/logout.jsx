@@ -1,13 +1,13 @@
 import { redirect } from "remix"
 
-import { destroySession, getSession } from "../sessions.server"
+import { getUserSession, destroyUserSession } from "../sessions.server"
 
 export async function action({ request }) {
-    const session = await getSession(request.headers.get("Cookie"))
-
+    const userSession = await getUserSession(request.headers.get("Cookie"))
+    console.log("This should work")
     return redirect("/login", {
         headers: {
-            "Set-Cookie": await destroySession(session),
+            "Set-Cookie": await destroyUserSession(userSession),
         },
     })
 }

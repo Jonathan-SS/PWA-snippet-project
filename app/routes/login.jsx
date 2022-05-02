@@ -2,14 +2,14 @@ import connectDb from "~/db/connectDb.server"
 import bcrypt from "bcryptjs"
 import { Form, json, redirect, useActionData, useSearchParams } from "remix"
 
-import { commitSession, getSession } from "../sessions.server.js"
+import { commitUserSession, getUserSession } from "../sessions.server.js"
 
-// export async function loader({ request }) {
-//     const session = await getSession(request.headers.get("Cookie"))
-//     return json({
-//         authToken: session.get("auth-token"),
-//     })
-// }
+export async function loader({ request }) {
+    const userSession = await getUserSession(request.headers.get("Cookie"))
+    return json({
+        loggedIn: userSession.get("loggedIn"),
+    })
+}
 
 export async function action({ request }) {
     const db = await connectDb()
@@ -21,7 +21,6 @@ export async function action({ request }) {
             username: username,
         })
 
-        // if (!user) throw new Error("User not found") // expected to be caught by the catch below
         if (!user) {
             return json(
                 { errors: { username: "User not found" } },
@@ -38,15 +37,14 @@ export async function action({ request }) {
             )
         }
 
-        const session = await getSession(request.headers.get("auth-token"))
-        session.set("auth-token", user._id)
+        const userSession = await getUserSession(request.headers.get("Cookie"))
+        userSession.set("loggedIn", true)
 
         // return null
         return redirect("/snippets/all", {
             headers: {
                 status: 200,
-                "Set-Cookie": `auth-token=${user._id}`,
-                // "Set-Cookie": await commitSession(session),
+                "Set-Cookie": await commitUserSession(userSession),
             },
         })
     } catch (error) {
@@ -68,7 +66,7 @@ export default function Login() {
     return (
         <div className="overflow-y-scroll h-96 md:h-full w-full px-4 md:w-50-vw scrollbar-hide">
             <h1 className="text-4xl font-bold mb-2 mr-2">Login</h1>
-            <Form method="post">
+            <Form method="post" reloadDocument>
                 <input
                     type="hidden"
                     name="redirectTo"
