@@ -38,7 +38,7 @@ export async function action({ request }) {
         }
 
         const userSession = await getUserSession(request.headers.get("Cookie"))
-        userSession.set("loggedIn", true)
+        userSession.set("userId", user.id)
 
         // return null
         return redirect("/snippets/all", {
