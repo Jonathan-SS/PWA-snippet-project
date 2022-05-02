@@ -40,7 +40,7 @@ const userSchema = new Schema({
         required: [true, "Gotta have a password"],
     },
 })
-const subscribtionSchema = new Schema({
+const subscriptionSchema = new Schema({
     endpoint: String,
     expirationTime: String,
     keys: {
@@ -61,8 +61,8 @@ export const models = [
         collection: "users",
     },
     {
-        name: "Subscribtion",
-        schema: subscribtionSchema,
-        collection: "subscribtions",
+        name: "Subscription",
+        schema: subscriptionSchema,
+        collection: "subscriptions",
     },
 ]

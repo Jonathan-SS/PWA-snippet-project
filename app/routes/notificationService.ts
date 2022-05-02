@@ -23,39 +23,39 @@ export const action: ActionFunction = async ({ request }) => {
 
     switch (request.method) {
         case "DELETE":
-            await db.models.Subscribtion.deleteMany({})
+            await db.models.Subscription.deleteMany({})
             return json({
                 status: 200,
-                message: "Subscribtions deleted",
+                message: "Subscriptions deleted",
             })
         case "POST":
             const pushMessage = await request.json()
             console.log("pushMessage: ", pushMessage)
 
-            // TODO: Filter subscribtions with query
-            // TODO: Set expiration date on subscribtions
-            // Fetch subscribtions from database
-            const subscribtions = await db.models.Subscribtion.find().select({
+            // TODO: Filter Subscription with query
+            // TODO: Set expiration date on Subscription
+            // Fetch Subscription from database
+            const subscription = await db.models.Subscription.find().select({
                 _id: 0,
                 __v: 0,
             })
 
-            // Send notification to all subscribtions
-            subscribtions.forEach((subscribtion) => {
-                sendNotification(subscribtion, pushMessage)
+            // Send notification to all Subscription
+            subscription.forEach((subscription) => {
+                sendNotification(subscription, pushMessage)
             })
 
             return json({
                 status: 200,
                 message: "Message sent",
-                subscribtions,
+                subscription,
             })
     }
 }
 
 export const loader: LoaderFunction = async () => {
     const db = await connectDb()
-    const subscribtions = await db.models.Subscribtion.find().select({
+    const subscription = await db.models.Subscription.find().select({
         _id: 0,
         __v: 0,
     })
@@ -63,6 +63,6 @@ export const loader: LoaderFunction = async () => {
     return json({
         status: 200,
         message: "Message sent",
-        subscribtions,
+        subscription,
     })
 }
