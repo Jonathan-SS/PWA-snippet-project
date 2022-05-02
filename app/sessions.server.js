@@ -1,15 +1,18 @@
 // app/sessions.js
 import { createCookieSessionStorage, redirect } from "remix"
 
-import { sessionCookie } from "./cookies.server"
+import { userCookie } from "./cookies.server"
 
-export const { getSession, commitSession, destroySession } =
-    createCookieSessionStorage({ cookie: sessionCookie })
+export const {
+    getSession: getUserSession,
+    commitSession: commitUserSession,
+    destroySession: destroyUserSession,
+} = createCookieSessionStorage({ cookie: userCookie })
 
 export async function requireUserSession(request) {
     // get the session
     const cookie = request.headers.get("Cookie")
-    const session = await getSession(cookie)
+    const session = await getUserSession(cookie)
 
     // validate the session, `userId` is just an example, use whatever value you
     // put in the session when the user authenticated
