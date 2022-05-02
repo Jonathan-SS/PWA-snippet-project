@@ -53,13 +53,13 @@ const userSchema = new Schema({
         type: String,
         required: [true, "Gotta have a password"],
     },
-})
-const subscriptionSchema = new Schema({
-    endpoint: String,
-    expirationTime: String,
-    keys: {
-        p256dh: String,
-        auth: String,
+    subscription: {
+        endpoint: String,
+        expirationTime: String,
+        keys: {
+            p256dh: String,
+            auth: String,
+        },
     },
 })
 
@@ -73,10 +73,5 @@ export const models = [
         name: "user",
         schema: userSchema,
         collection: "users",
-    },
-    {
-        name: "Subscription",
-        schema: subscriptionSchema,
-        collection: "subscriptions",
     },
 ]

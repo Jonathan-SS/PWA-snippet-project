@@ -6,11 +6,11 @@ export function useAccount(): boolean {
     useEffect(() => {
         ;(async () => {
             const user = document.cookie.match("__loggedIn")
-            const userValue = user.input
-            if (userValue == null) {
+
+            if (user.input == null) {
                 setLoggedIn(false)
             } else {
-                if (userValue == "__loggedIn=") {
+                if (user.input == "__loggedIn=") {
                     setLoggedIn(false)
                 } else {
                     setLoggedIn(true)

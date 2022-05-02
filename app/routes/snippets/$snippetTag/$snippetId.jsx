@@ -5,8 +5,12 @@ import Highlight from "react-highlight"
 import { Link } from "react-router-dom"
 import { Form, json, redirect, useCatch, useLoaderData, useParams } from "remix"
 
-export async function loader({ params }) {
-    const session = getUserSession()
+import { getUserSession } from "../../../sessions.server"
+
+export async function loader({ params, request }) {
+    const session = await getUserSession(request.headers.get("Cookie"))
+    const userId = session.get("userId")
+
     const db = await connectDb()
     const snippet = await db.models.Snippet.findById(params.snippetId)
     if (!snippet) {
@@ -17,12 +21,10 @@ export async function loader({ params }) {
             }
         )
     }
-    return json(snippet)
+    return json({ snippet: snippet, userId: userId })
 }
 
 export async function action({ request }) {
-    const sw = useSW()
-
     const form = await request.formData()
     const _action = form.get("_action")
     const snippetId = form.get("snippetId")
@@ -58,7 +60,8 @@ export async function action({ request }) {
 }
 
 export default function BookPage() {
-    const snippet = useLoaderData()
+    const { snippet, userId } = useLoaderData()
+    console.log(userId)
     const dateAdded = new Date(snippet.dateAdded)
     const displayDate = dateAdded.toLocaleDateString("da-DK", {
         dateStyle: "long",
@@ -70,11 +73,12 @@ export default function BookPage() {
         setCopyState(true)
     }, [])
     const saveSubscriptionAndAddAubscriber = async (subscription) => {
-        const SERVER_URL = `${location.origin}/subscribtionService`
+        const SERVER_URL = `${location.origin}/subscriptionService`
         const data = {
             subscription,
             snippetId: snippet._id,
             _method: "addBoth",
+            userId: userId,
         }
         return fetch(SERVER_URL, {
             method: "post",
@@ -85,8 +89,13 @@ export default function BookPage() {
         })
     }
     const saveSubscriptionOnly = async (subscription) => {
-        const SERVER_URL = `${location.origin}/subscribtionService`
-        const data = { subscription, snippetId: snippet._id, _method: "addSub" }
+        const SERVER_URL = `${location.origin}/subscriptionService`
+        const data = {
+            subscription,
+            snippetId: snippet._id,
+            _method: "addSub",
+            userId,
+        }
 
         return fetch(SERVER_URL, {
             method: "post",
@@ -97,7 +106,7 @@ export default function BookPage() {
         })
     }
 
-    async function subToSnip(id) {
+    async function subToSnip() {
         try {
             const VAPID_PUBLIC_KEY =
                 "BEApaM42xO4ckE_i6WH0SPyfAXWPtZJncv4d_foykgnhTGMaLsbmXOWdldaj7YTy4NJIzPdq4jO6Jl2lME_fg_E"
@@ -117,7 +126,7 @@ export default function BookPage() {
                 return null
             }
             await saveSubscriptionOnly(subscribed)
-            console.log(subscribed)
+
             return null
         } catch (err) {
             console.log("Error", err)
