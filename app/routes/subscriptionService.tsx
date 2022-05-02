@@ -6,11 +6,17 @@ export const action: ActionFunction = async ({ request }) => {
 
     switch (request.method) {
         case "DELETE":
-            await db.models.Subscription.deleteMany({})
-            return json({
-                status: 200,
-                message: "Subscriptions deleted",
-            })
+            if (process.env.NODE_ENV === "development") {
+                await db.models.Subscription.deleteMany({})
+                return json({
+                    status: 200,
+                    message: "Subscriptions deleted",
+                })
+            }
+            return {
+                status: 400,
+                message: "Bad Request",
+            }
         case "POST":
             try {
                 const pushSubscription = await request.json()
