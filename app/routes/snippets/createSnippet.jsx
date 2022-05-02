@@ -1,6 +1,12 @@
 import connectDb from "~/db/connectDb.server"
 import { useEffect } from "react"
 import { Form, json, redirect, useActionData } from "remix"
+import { requireUserSession, getUserSession } from "../../sessions.server"
+
+export async function loader({ request }) {
+    await requireUserSession(request)
+    return null
+}
 
 export async function action({ request }) {
     const form = await request.formData()
@@ -8,7 +14,9 @@ export async function action({ request }) {
     const languageTag = form.get("languageTag")
     const description = form.get("description")
     const snippet = form.get("snippet")
+    const visibility = form.get("visibility")
     const db = await connectDb()
+    const session = await getUserSession(request.headers.get("Cookie"))
 
     try {
         const newSnippet = await db.models.Snippet.create({
@@ -16,6 +24,8 @@ export async function action({ request }) {
             languageTag,
             description,
             snippet,
+            visibility,
+            userId: session.get("userId"),
         })
         return redirect(`/snippets/snippet/${newSnippet._id}`)
     } catch (error) {
@@ -39,19 +49,18 @@ export default function CreateSnippet() {
                 >
                     Title
                 </label>
-                {actionData?.errors.title && (
+                {actionData && actionData.errors?.title && (
                     <p className="text-red-500">
-                        {actionData?.errors.title.message}
+                        {actionData.errors.title.message}
                     </p>
                 )}
                 <input
                     type="text"
                     name="title"
-                    defaultValue={actionData?.errors.title.value}
                     id="title"
                     className={
                         "w-full min-w-[200px] " +
-                        (actionData?.errors.description
+                        (actionData && actionData.errors?.description
                             ? "border-2 border-red-500 rounded-lg px-2 dark:bg-gray-700 resize-none bg-blue-600 text-white dark:text-black"
                             : " rounded-lg  px-2 dark:bg-gray-700 resize-none bg-blue-600 text-white")
                     }
@@ -90,25 +99,39 @@ export default function CreateSnippet() {
                     <option value="python">Python</option>
                 </select>
                 <label
+                    htmlFor="visibility"
+                    className="block mt-3 pb-2 text-xl font-semibold"
+                >
+                    Public or private snippet?
+                </label>
+                <select
+                    name="visibility"
+                    className="text-white dark:bg-gray-700 bg-blue-600"
+                    defaultValue="Public"
+                >
+                    <option value="Public">Public</option>
+                    <option value="Private">Private</option>
+                </select>
+
+                <label
                     htmlFor="description"
                     className="block mt-3 text-xl pb-2 font-semibold"
                 >
                     Description
                 </label>
-                {actionData?.errors.description && (
+                {actionData && actionData.errors?.description && (
                     <p className="text-red-500">
-                        {actionData?.errors.description.message}
+                        {actionData.errors.description.message}
                     </p>
                 )}
                 <textarea
                     name="description"
                     cols="10"
                     rows="5"
-                    defaultValue={actionData?.errors.description.value}
                     id="description"
                     className={
                         "w-full min-w-[200px] " +
-                        (actionData?.errors.description
+                        (actionData && actionData.errors?.description
                             ? "border-2 border-red-500 rounded-lg px-2 dark:bg-gray-700 resize-none bg-blue-600 text-white dark:text-black"
                             : " rounded-lg  px-2 dark:bg-gray-700 resize-none bg-blue-600 text-white")
                     }
@@ -120,20 +143,19 @@ export default function CreateSnippet() {
                 >
                     Snippet
                 </label>
-                {actionData?.errors.snippet && (
+                {actionData && actionData.errors?.snippet && (
                     <p className="text-red-500">
-                        {actionData?.errors.snippet.message}
+                        {actionData.errors.snippet.message}
                     </p>
                 )}
                 <textarea
                     name="snippet"
-                    defaultValue={actionData?.errors.description.value}
                     id="snippet"
                     cols="10"
                     rows="8"
                     className={
                         "w-full min-w-[200px] " +
-                        (actionData?.errors.description
+                        (actionData && actionData.errors?.description
                             ? "border-2 border-red-500 rounded-lg px-2 dark:bg-gray-700 resize-none bg-blue-600 text-white dark:text-black"
                             : " rounded-lg  px-2 dark:bg-gray-700 resize-none bg-blue-600 text-white")
                     }
