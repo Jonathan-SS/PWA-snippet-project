@@ -5,7 +5,12 @@ import Highlight from "react-highlight"
 import { Link } from "react-router-dom"
 import { Form, json, redirect, useCatch, useLoaderData, useParams } from "remix"
 
-export async function loader({ params }) {
+import { getUserSession } from "../../../sessions.server"
+
+export async function loader({ params, request }) {
+    const session = await getUserSession(request.headers.get("Cookie"))
+    const userId = session.get("userId")
+
     const db = await connectDb()
     const snippet = await db.models.Snippet.findById(params.snippetId)
     if (!snippet) {
@@ -16,7 +21,7 @@ export async function loader({ params }) {
             }
         )
     }
-    return json(snippet)
+    return json({ snippet: snippet, userId: userId })
 }
 
 export async function action({ request }) {
@@ -55,7 +60,8 @@ export async function action({ request }) {
 }
 
 export default function BookPage() {
-    const snippet = useLoaderData()
+    const { snippet, userId } = useLoaderData()
+    console.log(userId)
     const dateAdded = new Date(snippet.dateAdded)
     const displayDate = dateAdded.toLocaleDateString("da-DK", {
         dateStyle: "long",
@@ -66,6 +72,67 @@ export default function BookPage() {
     useEffect(() => {
         setCopyState(true)
     }, [])
+    const saveSubscriptionAndAddAubscriber = async (subscription) => {
+        const SERVER_URL = `${location.origin}/subscriptionService`
+        const data = {
+            subscription,
+            snippetId: snippet._id,
+            _method: "addBoth",
+            userId: userId,
+        }
+        return fetch(SERVER_URL, {
+            method: "post",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(data),
+        })
+    }
+    const saveSubscriptionOnly = async (subscription) => {
+        const SERVER_URL = `${location.origin}/subscriptionService`
+        const data = {
+            subscription,
+            snippetId: snippet._id,
+            _method: "addSub",
+            userId,
+        }
+
+        return fetch(SERVER_URL, {
+            method: "post",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(data),
+        })
+    }
+
+    async function subToSnip() {
+        try {
+            const VAPID_PUBLIC_KEY =
+                "BEApaM42xO4ckE_i6WH0SPyfAXWPtZJncv4d_foykgnhTGMaLsbmXOWdldaj7YTy4NJIzPdq4jO6Jl2lME_fg_E"
+            // const applicationServerKey = urlB64ToUint8Array(VAPID_PUBLIC_KEY)
+            const options = {
+                applicationServerKey: VAPID_PUBLIC_KEY,
+                userVisibleOnly: true,
+            }
+
+            const registration = await navigator.serviceWorker.getRegistration()
+            const subscribed = await registration.pushManager.getSubscription()
+            if (subscribed === null) {
+                const subscription = await registration.pushManager.subscribe(
+                    options
+                )
+                await saveSubscriptionAndAddAubscriber(subscription)
+                return null
+            }
+            await saveSubscriptionOnly(subscribed)
+
+            return null
+        } catch (err) {
+            console.log("Error", err)
+            return null
+        }
+    }
 
     return (
         <div className="mt-4 overflow-y-scroll h-4/5 md:h-full md:pb-10 scrollbar-hide flex-shrink basis-4/5 ">
@@ -75,6 +142,7 @@ export default function BookPage() {
                     <p>Date: {displayDate}</p>
                     <p>Language: {snippet.languageTag}</p>
                 </div>
+                <button onClick={subToSnip}>sub</button>
 
                 <Form
                     method="post"
@@ -98,6 +166,7 @@ export default function BookPage() {
                         />
                     </button>
                 </Form>
+
                 <Link
                     className=" hover:bg-blue-600 bg-blue-800 text-white dark:bg-gray-800 dark:hover:bg-gray-700 ml-4 rounded-lg px-2 py-1"
                     to={`/snippets/${languageTag}/${snippet._id}/update`}
@@ -113,6 +182,15 @@ export default function BookPage() {
                     <button className=" text-white" type="submit">
                         Delete
                     </button>
+                </Form>
+                <Form
+                    method="post"
+                    className=" ml-4 flex items-center h-fit bg-blue-800 hover:bg-blue-600 dark:bg-gray-800 dark:hover:bg-gray-700 rounded-lg px-2 py-1"
+                >
+                    <input type="hidden" name="snippetId" value={snippet._id} />
+                    <input type="hidden" name="_action" value="subToSnip" />
+
+                    <button type="submit">Subscribe to this snippet</button>
                 </Form>
             </div>
 
