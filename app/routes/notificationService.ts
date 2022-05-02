@@ -22,34 +22,33 @@ export const action: ActionFunction = async ({ request }) => {
     const db = await connectDb()
 
     switch (request.method) {
-        case "DELETE":
-            await db.models.Subscription.deleteMany({})
-            return json({
-                status: 200,
-                message: "Subscriptions deleted",
-            })
         case "POST":
             const pushMessage = await request.json()
-            console.log("pushMessage: ", pushMessage)
 
             // TODO: Filter Subscription with query
             // TODO: Set expiration date on Subscription
             // Fetch Subscription from database
-            const subscription = await db.models.Subscription.find().select({
+            const subscriptions = await db.models.Subscription.find().select({
                 _id: 0,
                 __v: 0,
             })
+            console.log("subscriptions: ", subscriptions)
 
             // Send notification to all Subscription
-            subscription.forEach((subscription) => {
+            subscriptions.forEach((subscription) => {
                 sendNotification(subscription, pushMessage)
             })
 
             return json({
                 status: 200,
                 message: "Message sent",
-                subscription,
+                subscriptions,
             })
+        default:
+            return {
+                status: 400,
+                message: "Bad Request",
+            }
     }
 }
 

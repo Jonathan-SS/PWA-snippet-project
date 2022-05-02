@@ -6,16 +6,17 @@ export const action: ActionFunction = async ({ request }) => {
 
     switch (request.method) {
         case "DELETE":
-            await db.models.Subscribtion.deleteMany({})
+            await db.models.Subscription.deleteMany({})
             return json({
                 status: 200,
-                message: "Subscribtions deleted",
+                message: "Subscriptions deleted",
             })
         case "POST":
             try {
-                const pushSubscribtion = await request.json()
-                const newSubscribtion = await db.models.Subscribtion.create(
-                    pushSubscribtion
+                const pushSubscription = await request.json()
+                console.log("pushSubscribtion: ", pushSubscription)
+                const newSubscribtion = await db.models.Subscription.create(
+                    pushSubscription
                 )
 
                 return new Response(newSubscribtion, {
@@ -25,6 +26,11 @@ export const action: ActionFunction = async ({ request }) => {
                 })
             } catch (error) {
                 return json({ status: 400 })
+            }
+        default:
+            return {
+                status: 400,
+                message: "Bad Request",
             }
     }
 }
