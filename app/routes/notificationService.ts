@@ -19,11 +19,13 @@ const sendNotification = async (subscription, dataToSend) => {
 }
 
 export const action: ActionFunction = async ({ request }) => {
+    console.log("default")
     const db = await connectDb()
 
     switch (request.method) {
         case "POST":
             const pushMessage = await request.json()
+            console.log("pushMessage: ", pushMessage)
 
             // TODO: Filter Subscription with query
             // TODO: Set expiration date on Subscription
