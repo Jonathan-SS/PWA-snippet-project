@@ -9,9 +9,10 @@ export async function loader({ request }) {
     await requireUserSession(request)
     const db = await connectDb()
     const session = await getUserSession(request.headers.get("Cookie"))
+    const userId = session.get("userId")
 
     return await db.models.Snippet.find({
-        userId: session.get("userId"),
+        userId: userId,
     })
 }
 
@@ -20,11 +21,12 @@ export async function action({ request }) {
     const _action = form.get("_action")
     const session = await getUserSession(request.headers.get("Cookie"))
     const db = await connectDb()
+    const userId = session.get("userId")
     switch (_action) {
         case "search":
             const query = form.get("searchQuery")
             const searchSnippets = await db.models.Snippet.find({
-                userId: session.get("userId"),
+                userId: userId,
                 title: { $regex: new RegExp(query, "i") },
             })
 
@@ -36,30 +38,30 @@ export async function action({ request }) {
 
             if (sortMethod === "updated") {
                 snippets = await db.models.Snippet.find({
-                    userId: session.get("userId"),
+                    userId: userId,
                 }).sort({
                     lastModified: 1,
                 })
             } else if (sortMethod === "added") {
                 snippets = await db.models.Snippet.find({
-                    userId: session.get("userId"),
+                    userId: userId,
                 }).sort({
                     dateAdded: 1,
                 })
             } else if (sortMethod === "title") {
                 snippets = await db.models.Snippet.find({
-                    userId: session.get("userId"),
+                    userId: userId,
                 }).sort({
                     title: 1,
                 })
             } else if (sortMethod === "favorites") {
                 snippets = await db.models.Snippet.find({
-                    userId: session.get("userId"),
+                    userId: userId,
                     favorite: 1,
                 })
             } else {
                 snippets = await db.models.Snippet.find({
-                    userId: session.get("userId"),
+                    userId: userId,
                 })
             }
             return snippets
