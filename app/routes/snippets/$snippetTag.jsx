@@ -9,13 +9,13 @@ export async function loader({ params }) {
 
     if (params.snippetTag === "all") {
         return await db.models.Snippet.find({
-            visibility: "Public",
+            visibility: true,
         })
     }
 
     return await db.models.Snippet.find({
         languageTag: params.snippetTag,
-        visibility: "Public",
+        visibility: true,
     })
 }
 
@@ -29,7 +29,7 @@ export async function action({ request, params }) {
             const query = form.get("searchQuery")
             const searchSnippets = await db.models.Snippet.find({
                 title: { $regex: new RegExp(query, "i") },
-                visibility: "Public",
+                visibility: true,
             })
 
             return searchSnippets
@@ -41,14 +41,14 @@ export async function action({ request, params }) {
             if (sortMethod === "updated") {
                 if (!(language === "all")) {
                     snippets = await db.models.Snippet.find({
-                        visibility: "Public",
+                        visibility: true,
                         languageTag: language,
                     }).sort({
                         lastModified: 1,
                     })
                 } else {
                     snippets = await db.models.Snippet.find({
-                        visibility: "Public",
+                        visibility: true,
                     }).sort({
                         lastModified: 1,
                     })
@@ -56,14 +56,14 @@ export async function action({ request, params }) {
             } else if (sortMethod === "added") {
                 if (!(language === "all")) {
                     snippets = await db.models.Snippet.find({
-                        visibility: "Public",
+                        visibility: true,
                         languageTag: language,
                     }).sort({
                         dateAdded: 1,
                     })
                 } else {
                     snippets = await db.models.Snippet.find({
-                        visibility: "Public",
+                        visibility: true,
                     }).sort({
                         dateAdded: 1,
                     })
@@ -71,14 +71,14 @@ export async function action({ request, params }) {
             } else if (sortMethod === "title") {
                 if (!(language === "all")) {
                     snippets = await db.models.Snippet.find({
-                        visibility: "Public",
+                        visibility: true,
                         languageTag: language,
                     }).sort({
                         title: 1,
                     })
                 } else {
                     snippets = await db.models.Snippet.find({
-                        visibility: "Public",
+                        visibility: true,
                     }).sort({
                         title: 1,
                     })
@@ -86,13 +86,13 @@ export async function action({ request, params }) {
             } else if (sortMethod === "favorites") {
                 if (!(language === "all")) {
                     snippets = await db.models.Snippet.find({
-                        visibility: "Public",
+                        visibility: true,
                         languageTag: language,
                         favorite: 1,
                     })
                 } else {
                     snippets = await db.models.Snippet.find({
-                        visibility: "Public",
+                        visibility: true,
                         favorite: 1,
                     })
                 }
