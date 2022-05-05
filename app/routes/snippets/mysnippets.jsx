@@ -1,9 +1,10 @@
 import { Outlet, useActionData } from "@remix-run/react"
-import { useLoaderData, Form } from "remix"
 import { SearchIcon } from "~/components/Icons"
 import SnippetListItem from "~/components/SnippetListItem"
 import connectDb from "~/db/connectDb.server.js"
-import { requireUserSession, getUserSession } from "../../sessions.server.js"
+import { Form, useLoaderData } from "remix"
+
+import { getUserSession, requireUserSession } from "../../sessions.server.js"
 
 export async function loader({ request }) {
     await requireUserSession(request)

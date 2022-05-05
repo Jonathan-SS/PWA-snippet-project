@@ -2,10 +2,24 @@ import { Outlet, useActionData } from "@remix-run/react"
 import { SearchIcon } from "~/components/Icons"
 import SnippetListItem from "~/components/SnippetListItem"
 import connectDb from "~/db/connectDb.server.js"
-import { Form, useLoaderData, useParams } from "remix"
+import { Form, useLoaderData, useParams, useSubmit } from "remix"
 
-export async function loader({ params }) {
+export async function loader({ params, request }) {
     const db = await connectDb()
+    const url = new URL(request.url)
+
+    const searchTerm = url.searchParams.get("search")
+    const sort = url.searchParams.get("search")
+    console.log("sort: ", sort)
+
+    // Search and sort public snippets
+    return await db.models.Snippet.find({
+        title: searchTerm ? { $regex: new RegExp(searchTerm, "i") } : "",
+        visibility: true,
+        languageTag: params.snippetTag,
+    }).sort({
+        [sort]: 1,
+    })
 
     if (params.snippetTag === "all") {
         return await db.models.Snippet.find({
@@ -13,10 +27,10 @@ export async function loader({ params }) {
         })
     }
 
-    return await db.models.Snippet.find({
-        languageTag: params.snippetTag,
-        visibility: true,
-    })
+    // return await db.models.Snippet.find({
+    //     languageTag: params.snippetTag,
+    //     visibility: true,
+    // })
 }
 
 export async function action({ request, params }) {
@@ -105,22 +119,28 @@ export async function action({ request, params }) {
 export default function Index() {
     const snippets = useLoaderData()
     const actionSnippets = useActionData()
-    const languageTag = useParams().snippetTag
+    const submit = useSubmit()
+    // const [searchParams] = useSearchParams();
+    const { snippetTag } = useParams()
 
     return (
         <>
             <div className="border-b md:dark:border-gray-700 mb-4 pb-2 ">
                 <div className="flex items-center justify-between">
                     <h1 className="text-2xl font-bold">
-                        {languageTag} Snippets
+                        {snippetTag} Snippets
                     </h1>
                 </div>
 
-                <Form method="post" className="flex my-2">
+                <Form
+                    method="get"
+                    className="flex my-2"
+                    onChange={(event) => submit(event.currentTarget)}
+                >
                     <input
                         className="rounded px-1 border-b-slate-400 dark:border-none dark:text-gray-800 mr-2"
-                        type="text"
-                        name="searchQuery"
+                        type="search"
+                        name="search"
                         placeholder="Search snippets..."
                     />
                     <input type="hidden" name="_action" value="search" />
@@ -128,9 +148,9 @@ export default function Index() {
                         <SearchIcon />
                     </button>
                 </Form>
-                <Form method="post">
+                <Form method="get">
                     <select
-                        name="sortMethod"
+                        name="sort"
                         className="dark:text-gray-800 rounded-lg"
                     >
                         <option value="updated">Last updated</option>
@@ -161,7 +181,7 @@ export default function Index() {
                                   <SnippetListItem
                                       key={snippet._id}
                                       snippet={snippet}
-                                      languageTag={languageTag}
+                                      languageTag={snippetTag}
                                   />
                               ))}
 
