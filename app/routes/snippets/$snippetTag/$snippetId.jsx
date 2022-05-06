@@ -15,7 +15,7 @@ export async function loader({ params, request }) {
     const snippet = await db.models.Snippet.findById(params.snippetId)
     if (!snippet) {
         throw new Response(
-            `Couldn't find snippets with id ${params.snippetId}`,
+            `Couldn't find snippet with id: ${params.snippetId}`,
             {
                 status: 404,
             }
@@ -202,22 +202,32 @@ export default function BookPage() {
                     </button>
                 </Form>
 
-                <Link
-                    className=" hover:bg-blue-600 bg-blue-800 text-white dark:bg-gray-800 dark:hover:bg-gray-700 ml-4 rounded-lg px-2 py-1"
-                    to={`/snippets/${languageTag}/${snippet._id}/update`}
-                >
-                    Update Snippet
-                </Link>
-                <Form
-                    method="post"
-                    className="bg-red-700 hover:bg-red-500 ml-4 rounded-lg px-2 py-1"
-                >
-                    <input type="hidden" name="snippetId" value={snippet._id} />
-                    <input type="hidden" name="_action" value="delete" />
-                    <button className=" text-white" type="submit">
-                        Delete
-                    </button>
-                </Form>
+                {snippet.userId == userId ? (
+                    <Link
+                        className=" hover:bg-blue-600 bg-blue-800 text-white dark:bg-gray-800 dark:hover:bg-gray-700 ml-4 rounded-lg px-2 py-1"
+                        to={`/snippets/${languageTag}/${snippet._id}/update`}
+                    >
+                        Update Snippet
+                    </Link>
+                ) : null}
+
+                {snippet.userId == userId ? (
+                    <Form
+                        method="post"
+                        className="bg-red-700 hover:bg-red-500 ml-4 rounded-lg px-2 py-1"
+                    >
+                        <input
+                            type="hidden"
+                            name="snippetId"
+                            value={snippet._id}
+                        />
+                        <input type="hidden" name="_action" value="delete" />
+                        <button className=" text-white" type="submit">
+                            Delete
+                        </button>
+                    </Form>
+                ) : null}
+
                 <Form
                     method="post"
                     className=" ml-4 flex items-center h-fit bg-blue-800 hover:bg-blue-600 dark:bg-gray-800 dark:hover:bg-gray-700 rounded-lg px-2 py-1"
