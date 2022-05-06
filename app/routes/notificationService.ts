@@ -28,13 +28,8 @@ export const action: ActionFunction = async ({ request }) => {
         case "POST":
             const data = await request.json()
 
-            // TODO: Filter Subscription with query
-            // TODO: Set expiration date on Subscription
-            // Fetch Subscription from database
-            // const subscriptions = await db.models.Subscription.find().select({
-            //     _id: 0,
-            //     __v: 0,
-            // })
+            console.log(data)
+
             console.log("subscriptions: ", data.subs.subscribers)
             data.subs.subscribers.forEach(async (sub) => {
                 const subscription = await db.models.user
