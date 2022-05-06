@@ -11,6 +11,8 @@ webpush.setVapidDetails(
 
 //function to send the notification to the subscribed device
 const sendNotification = async (subscription, dataToSend) => {
+    console.log("web-push: ", subscription)
+
     try {
         webpush.sendNotification(subscription, JSON.stringify(dataToSend))
     } catch (error) {
@@ -24,27 +26,32 @@ export const action: ActionFunction = async ({ request }) => {
 
     switch (request.method) {
         case "POST":
-            const pushMessage = await request.json()
-            console.log("pushMessage: ", pushMessage)
+            const data = await request.json()
 
             // TODO: Filter Subscription with query
             // TODO: Set expiration date on Subscription
             // Fetch Subscription from database
-            const subscriptions = await db.models.Subscription.find().select({
-                _id: 0,
-                __v: 0,
+            // const subscriptions = await db.models.Subscription.find().select({
+            //     _id: 0,
+            //     __v: 0,
+            // })
+            console.log("subscriptions: ", data.subs.subscribers)
+            data.subs.subscribers.forEach(async (sub) => {
+                const subscription = await db.models.user
+                    .findOne({ _id: sub })
+                    .select({ subscription: 1, _id: 0 })
+                console.log("sub: ", subscription.subscription)
+                console.log("pushMessage: ", data.push)
+                console.log(subscription.subscription.endpoint)
+                sendNotification(subscription.subscription, data.push)
             })
-            console.log("subscriptions: ", subscriptions)
 
-            // Send notification to all Subscription
-            subscriptions.forEach((subscription) => {
-                sendNotification(subscription, pushMessage)
-            })
+            // // Send notification to all Subscription
 
             return json({
                 status: 200,
                 message: "Message sent",
-                subscriptions,
+                // subscriptions,
             })
         default:
             return {
