@@ -43,6 +43,7 @@ export const action: ActionFunction = async ({ request }) => {
                 console.log("sub: ", subscription.subscription)
                 console.log("pushMessage: ", data.push)
                 console.log(subscription.subscription.endpoint)
+
                 sendNotification(subscription.subscription, data.push)
             })
 
