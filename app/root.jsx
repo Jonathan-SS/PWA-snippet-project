@@ -1,3 +1,4 @@
+import connectDb from "~/db/connectDb.server.js"
 import styles from "~/tailwind.css"
 import highStyles from "highlight.js/styles/atom-one-dark.css"
 import {
@@ -7,9 +8,11 @@ import {
     Outlet,
     Scripts,
     ScrollRestoration,
+    useLoaderData,
 } from "remix"
 
 import SideBar from "./components/SideBar"
+import { getUserSession } from "./sessions.server.js"
 
 export const links = () => [
     {
@@ -72,7 +75,20 @@ export function meta() {
     }
 }
 
+export async function loader({ request }) {
+    const db = await connectDb()
+    const session = await getUserSession(request.headers.get("Cookie"))
+    const userId = session.get("userId")
+
+    // Return all languages from snippets that the user, has access to (includes public and private)
+    return await db.models.Snippet.find({
+        $or: [{ visibility: true }, { userId }],
+    }).distinct("languageTag")
+}
+
 export default function App() {
+    const languages = useLoaderData() || []
+
     return (
         <html lang="en" className="dark">
             <head>
@@ -80,7 +96,7 @@ export default function App() {
                 <Links />
             </head>
             <body className="h-screen dark:bg-gray-900 dark:text-white font-sans lg:grid lg:grid-cols-5">
-                <SideBar />
+                <SideBar languages={languages} />
                 <main className="p-4 overflow-hidden md:overflow-auto col-span-4">
                     <Outlet />
                 </main>

@@ -52,6 +52,10 @@ self.addEventListener("activate", async () => {
     }
 })
 
+// Network first look for cache
+// Give images from cache if available
+// Else fetch from network and cache
+
 self.addEventListener("fetch", (fetchEvent) => {
     // Look for an image, check cache othervise fetch and put to cache
     if (fetchEvent.request.destination === "image") {

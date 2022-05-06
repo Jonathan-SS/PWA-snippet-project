@@ -2,8 +2,8 @@ import { Outlet, useSubmit } from "@remix-run/react"
 import { SearchIcon } from "~/components/Icons"
 import SnippetListItem from "~/components/SnippetListItem"
 import connectDb from "~/db/connectDb.server.js"
-import { Form, useLoaderData, useParams } from "remix"
 import { getUserSession } from "~/sessions.server"
+import { Form, useLoaderData, useParams } from "remix"
 
 export async function loader({ params, request }) {
     const db = await connectDb()
@@ -13,52 +13,45 @@ export async function loader({ params, request }) {
     const url = new URL(request.url)
     const title = url.searchParams.get("title")
     const sort = url.searchParams.get("sort")
+    const languageTag = params.snippetTag
 
-    if (params.snippetTag === "all") {
-        const snippets = await db.models.Snippet.find(
+    const sharedQuery = { $or: [{ visibility: true }, { userId }] }
+
+    // Find all public and private snippets that matches with userID
+    // if user is not logged in, only public snippets are shown, e.g userId resolves to undefined
+    if (languageTag === "all")
+        return await db.models.Snippet.find(
             title
                 ? {
-                      title: { $regex: new RegExp(title, "i") },
-                      visibility: true,
+                      $and: [
+                          sharedQuery,
+                          {
+                              title: { $regex: new RegExp(title, "i") },
+                          },
+                      ],
                   }
-                : { visibility: true }
+                : sharedQuery
         ).sort({ [sort]: -1 })
 
-        return snippets
-    }
-    if (params.snippetTag === "mysnippets") {
-        const snippets = await db.models.Snippet.find(
-            title
-                ? {
-                      title: { $regex: new RegExp(title, "i") },
-                      userId: userId,
-                  }
-                : {
-                      userId: userId,
-                  }
-        ).sort({ [sort]: -1 })
-        return snippets
-    }
-
-    const snippets = await snippets
-        .find(
-            title
-                ? {
-                      title: { $regex: new RegExp(title, "i") },
-                      languageTag: params.snippetTag,
-                      visibility: true,
-                  }
-                : {
-                      languageTag: params.snippetTag,
-                      visibility: true,
-                  }
-        )
-        .sort({ [sort]: -1 })
-    return snippets
+    // Search in selected snippet languages,
+    return await db.models.Snippet.find(
+        title
+            ? {
+                  $and: [
+                      sharedQuery,
+                      {
+                          title: { $regex: new RegExp(title, "i") },
+                          languageTag,
+                      },
+                  ],
+              }
+            : { ...sharedQuery, languageTag }
+    ).sort({ [sort]: -1 })
 }
 
 export default function Index() {
-    const snippets = useLoaderData()
+    const snippets = useLoaderData() || []
+    console.log("snippets: ", snippets)
     const submit = useSubmit()
     const languageTag = useParams().snippetTag
 
