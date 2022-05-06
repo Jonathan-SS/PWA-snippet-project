@@ -109,7 +109,7 @@ export default function Index() {
                 </Form>
             </div>
             <div className="lg:flex gap-8">
-                <div className="my-8 overflow-y-scroll scrollbar-hide min-w-[200px] lg:max-w-sm basis-1/5 flex-grow">
+                <div className="my-8 overflow-y-scroll scrollbar-hide lg:max-w-sm basis-1/6 flex-grow">
                     <ul className="list-none gap-1 flex flex-shrink-0 flex-nowrap  md:flex-col">
                         {snippets.map((snippet) => (
                             <SnippetListItem

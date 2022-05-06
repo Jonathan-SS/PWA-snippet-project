@@ -6,7 +6,7 @@ export default function SnippetListItem({ snippet, languageTag }) {
     const displayDate = `${dateAdded.getDate()}-${dateAdded.getMonth()}-${dateAdded.getFullYear()}`
 
     return (
-        <li className="rounded-lg hover:bg-blue-600  bg-blue-800 dark:bg-gray-800 dark:hover:bg-gray-700 p-3 mb-1 min-w-200-px">
+        <li className="rounded-lg hover:bg-blue-600  bg-blue-800 dark:bg-gray-800 dark:hover:bg-gray-700 p-3 mb-1 min-w-300-px">
             <Link to={`/snippets/${languageTag}/${snippet._id}`}>
                 <h2 className=" text-white text-xl font-semibold">
                     {snippet.title}
@@ -18,9 +18,10 @@ export default function SnippetListItem({ snippet, languageTag }) {
                     <p className=" text-white dark:text-gray-300">
                         {displayDate}
                     </p>
-                    <div>
-                        {snippet.visibility ? <PublicIcon /> : <PrivateIcon />}
-                    </div>
+                </div>
+                <div className="flex flex-col -mt-12 top-0 items-end">
+                    {snippet.visibility ? <PublicIcon /> : <PrivateIcon />}
+
                     <StarIcon fill={snippet.favorite} />
                 </div>
             </Link>
