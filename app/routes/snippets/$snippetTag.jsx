@@ -1,4 +1,4 @@
-import { Outlet, useActionData } from "@remix-run/react"
+import { Outlet, useSubmit } from "@remix-run/react"
 import { SearchIcon } from "~/components/Icons"
 import SnippetListItem from "~/components/SnippetListItem"
 import connectDb from "~/db/connectDb.server.js"
@@ -10,110 +10,61 @@ export async function loader({ params, request }) {
     const session = await getUserSession(request.headers.get("Cookie"))
     const userId = session.get("userId")
 
+    const url = new URL(request.url)
+    const title = url.searchParams.get("title")
+    const sort = url.searchParams.get("sort")
+
     if (params.snippetTag === "all") {
-        return await db.models.Snippet.find({
-            visibility: true,
-        })
+        const snippets = await db.models.Snippet.find(
+            title
+                ? {
+                      title: { $regex: new RegExp(title, "i") },
+                      visibility: true,
+                  }
+                : { visibility: true }
+        ).sort({ [sort]: -1 })
+
+        return snippets
     }
     if (params.snippetTag === "mysnippets") {
-        return await db.models.Snippet.find({
-            userId: userId,
-        })
+        const snippets = await db.models.Snippet.find(
+            title
+                ? {
+                      title: { $regex: new RegExp(title, "i") },
+                      userId: userId,
+                  }
+                : {
+                      userId: userId,
+                  }
+        ).sort({ [sort]: -1 })
+        return snippets
     }
 
-    return await db.models.Snippet.find({
-        languageTag: params.snippetTag,
-        visibility: true,
-    })
-}
-
-export async function action({ request, params }) {
-    const language = String(params.snippetTag)
-    const form = await request.formData()
-    const _action = form.get("_action")
-    const db = await connectDb()
-    switch (_action) {
-        case "search":
-            const query = form.get("searchQuery")
-            const searchSnippets = await db.models.Snippet.find({
-                title: { $regex: new RegExp(query, "i") },
-                visibility: true,
-            })
-
-            return searchSnippets
-
-        case "sort":
-            const sortMethod = form.get("sortMethod")
-            let snippets = []
-
-            if (sortMethod === "updated") {
-                if (!(language === "all")) {
-                    snippets = await db.models.Snippet.find({
-                        visibility: true,
-                        languageTag: language,
-                    }).sort({
-                        lastModified: 1,
-                    })
-                } else {
-                    snippets = await db.models.Snippet.find({
-                        visibility: true,
-                    }).sort({
-                        lastModified: 1,
-                    })
-                }
-            } else if (sortMethod === "added") {
-                if (!(language === "all")) {
-                    snippets = await db.models.Snippet.find({
-                        visibility: true,
-                        languageTag: language,
-                    }).sort({
-                        dateAdded: 1,
-                    })
-                } else {
-                    snippets = await db.models.Snippet.find({
-                        visibility: true,
-                    }).sort({
-                        dateAdded: 1,
-                    })
-                }
-            } else if (sortMethod === "title") {
-                if (!(language === "all")) {
-                    snippets = await db.models.Snippet.find({
-                        visibility: true,
-                        languageTag: language,
-                    }).sort({
-                        title: 1,
-                    })
-                } else {
-                    snippets = await db.models.Snippet.find({
-                        visibility: true,
-                    }).sort({
-                        title: 1,
-                    })
-                }
-            } else if (sortMethod === "favorites") {
-                if (!(language === "all")) {
-                    snippets = await db.models.Snippet.find({
-                        visibility: true,
-                        languageTag: language,
-                        favorite: 1,
-                    })
-                } else {
-                    snippets = await db.models.Snippet.find({
-                        visibility: true,
-                        favorite: 1,
-                    })
-                }
-            }
-
-            return snippets
-    }
+    const snippets = await snippets
+        .find(
+            title
+                ? {
+                      title: { $regex: new RegExp(title, "i") },
+                      languageTag: params.snippetTag,
+                      visibility: true,
+                  }
+                : {
+                      languageTag: params.snippetTag,
+                      visibility: true,
+                  }
+        )
+        .sort({ [sort]: -1 })
+    return snippets
 }
 
 export default function Index() {
     const snippets = useLoaderData()
-    const actionSnippets = useActionData()
+    const submit = useSubmit()
     const languageTag = useParams().snippetTag
+
+    function handleChange(event) {
+        submit(event.currentTarget, { replace: true })
+    }
 
     return (
         <>
@@ -124,29 +75,31 @@ export default function Index() {
                     </h1>
                 </div>
 
-                <Form method="post" className="flex my-2">
+                <Form
+                    method="get"
+                    onChange={handleChange}
+                    className="flex my-2"
+                >
                     <input
                         className="rounded px-1 border-b-slate-400 dark:border-none dark:text-gray-800 mr-2"
-                        type="text"
-                        name="searchQuery"
+                        type="search"
+                        name="title"
                         placeholder="Search snippets..."
                     />
-                    <input type="hidden" name="_action" value="search" />
                     <button type="submit">
                         <SearchIcon />
                     </button>
                 </Form>
-                <Form method="post">
+                <Form method="get" onChange={handleChange}>
                     <select
-                        name="sortMethod"
+                        name="sort"
                         className="dark:text-gray-800 rounded-lg"
                     >
-                        <option value="updated">Last updated</option>
+                        <option value="updatedAt">Last updated</option>
                         <option value="title">Title</option>
-                        <option value="favorites">Favorites</option>
-                        <option value="added">Date added</option>
+                        <option value="favorite">Favorites</option>
+                        <option value="createdAt">Date added</option>
                     </select>
-                    <input type="hidden" name="_action" value="sort" />
                     <button
                         className="ml-3 dark:bg-gray-800 dark:hover:bg-gray-700 px-3 rounded-lg py-1 bg-blue-800 hover:bg-blue-600 text-white "
                         type="submit"
@@ -158,24 +111,15 @@ export default function Index() {
             <div className="lg:flex gap-8">
                 <div className="my-8 overflow-y-scroll scrollbar-hide min-w-[200px] lg:max-w-sm basis-1/5 flex-grow">
                     <ul className="list-none gap-1 flex flex-shrink-0 flex-nowrap  md:flex-col">
-                        {actionSnippets
-                            ? actionSnippets.map((snippet) => (
-                                  <SnippetListItem
-                                      key={snippet._id}
-                                      snippet={snippet}
-                                  />
-                              ))
-                            : snippets.map((snippet) => (
-                                  <SnippetListItem
-                                      key={snippet._id}
-                                      snippet={snippet}
-                                      languageTag={languageTag}
-                                  />
-                              ))}
+                        {snippets.map((snippet) => (
+                            <SnippetListItem
+                                key={snippet._id}
+                                snippet={snippet}
+                                languageTag={languageTag}
+                            />
+                        ))}
 
-                        {!actionSnippets && snippets.length === 0 && (
-                            <h2>No snippets found</h2>
-                        )}
+                        {snippets.length === 0 && <h2>No snippets found</h2>}
                     </ul>
                 </div>
                 <Outlet />

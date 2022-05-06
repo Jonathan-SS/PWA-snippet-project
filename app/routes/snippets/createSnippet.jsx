@@ -27,7 +27,7 @@ export async function action({ request }) {
             visibility,
             userId: session.get("userId"),
         })
-        return redirect(`/snippets/snippet/${newSnippet._id}`)
+        return redirect(`/snippets/mysnippets/${newSnippet._id}`)
     } catch (error) {
         return json(
             { errors: error.errors, values: Object.fromEntries(form) },

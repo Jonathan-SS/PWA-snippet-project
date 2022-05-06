@@ -6,16 +6,32 @@ import {
     useActionData,
     useLoaderData,
     useSubmit,
+    useCatch,
 } from "remix"
+import { getUserSession } from "~/sessions.server"
 
-export async function loader({ params }) {
+export async function loader({ params, request }) {
     const db = await connectDb()
     const snippet = await db.models.Snippet.findById(params.snippetId)
     if (!snippet) {
-        throw new Response(`Couldn't find book with id ${params.snippetId}`, {
-            status: 404,
+        throw new Response(
+            `Couldn't find snippet with id ${params.snippetId}`,
+            {
+                status: 404,
+            }
+        )
+    }
+
+    const snippetId = snippet.userId
+    const session = await getUserSession(request.headers.get("Cookie"))
+    const userId = session.get("userId")
+
+    if (snippetId != userId) {
+        throw new Response(`You don't own this snippetpage ${params.bookId}`, {
+            status: 403,
         })
     }
+
     return json(snippet)
 }
 
@@ -188,5 +204,25 @@ export default function CreateSnippet() {
                 </button>
             </Form>
         </div>
+    )
+}
+
+export function CatchBoundary() {
+    const caught = useCatch()
+    return (
+        <div>
+            <h1>
+                {caught.status} {caught.statusText}
+            </h1>
+            <h2>{caught.data}</h2>
+        </div>
+    )
+}
+
+export function ErrorBoundary({ error }) {
+    return (
+        <h1 className="text-red-500 font-bold">
+            {error.name}: {error.message}
+        </h1>
     )
 }

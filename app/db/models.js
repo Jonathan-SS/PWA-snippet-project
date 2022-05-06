@@ -30,7 +30,7 @@ const snippetSchema = new Schema(
             type: Date,
         },
         visibility: {
-            type: String,
+            type: Boolean,
             required: [true, "Missing visibility"],
         },
         userId: {
