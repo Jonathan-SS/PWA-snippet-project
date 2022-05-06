@@ -1,9 +1,9 @@
 import { CopyIcon, StarIcon } from "~/components/Icons"
-import connectDb from "~/db/connectDb.server.js"
 import { useEffect, useState } from "react"
 import Highlight from "react-highlight"
 import { Link } from "react-router-dom"
 import { Form, json, redirect, useCatch, useLoaderData, useParams } from "remix"
+import connectDb from "~/db/connectDb.server"
 
 import { getUserSession } from "../../../sessions.server"
 
@@ -61,7 +61,6 @@ export async function action({ request }) {
 
 export default function BookPage() {
     const { snippet, userId } = useLoaderData()
-    console.log(userId)
     const dateAdded = new Date(snippet.dateAdded)
     const displayDate = dateAdded.toLocaleDateString("da-DK", {
         dateStyle: "long",
@@ -72,6 +71,7 @@ export default function BookPage() {
     useEffect(() => {
         setCopyState(true)
     }, [])
+
     const saveSubscriptionAndAddAubscriber = async (subscription) => {
         const SERVER_URL = `${location.origin}/subscriptionService`
         const data = {
@@ -107,27 +107,62 @@ export default function BookPage() {
     }
 
     async function subToSnip() {
+        const SERVER_URL = `${location.origin}/subscriptionService`
+
         try {
+            const registration = await navigator.serviceWorker.getRegistration()
+            let subscription = await registration.pushManager.getSubscription()
             const VAPID_PUBLIC_KEY =
                 "BEApaM42xO4ckE_i6WH0SPyfAXWPtZJncv4d_foykgnhTGMaLsbmXOWdldaj7YTy4NJIzPdq4jO6Jl2lME_fg_E"
-            // const applicationServerKey = urlB64ToUint8Array(VAPID_PUBLIC_KEY)
             const options = {
                 applicationServerKey: VAPID_PUBLIC_KEY,
                 userVisibleOnly: true,
             }
-
-            const registration = await navigator.serviceWorker.getRegistration()
-            const subscribed = await registration.pushManager.getSubscription()
-            if (subscribed === null) {
-                const subscription = await registration.pushManager.subscribe(
-                    options
-                )
-                await saveSubscriptionAndAddAubscriber(subscription)
-                return null
+            console.log("noget")
+            if (!subscription) {
+                subscription = await registration.pushManager.subscribe(options)
             }
-            await saveSubscriptionOnly(subscribed)
+            fetch(SERVER_URL, {
+                method: "post",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    subscription,
+                    snippetId: snippet._id,
+                    userId: userId,
+                }),
+            })
 
-            return null
+            // const VAPID_PUBLIC_KEY =
+            //     "BEApaM42xO4ckE_i6WH0SPyfAXWPtZJncv4d_foykgnhTGMaLsbmXOWdldaj7YTy4NJIzPdq4jO6Jl2lME_fg_E"
+            // // const applicationServerKey = urlB64ToUint8Array(VAPID_PUBLIC_KEY)
+            // const options = {
+            //     applicationServerKey: VAPID_PUBLIC_KEY,
+            //     userVisibleOnly: true,
+            // }
+
+            // const registration = await navigator.serviceWorker.getRegistration()
+            // const subscribed = await registration.pushManager.getSubscription()
+            // if (subscribed === null) {
+            //     const subscription = await registration.pushManager.subscribe(
+            //         options
+            //     )
+            //     await saveSubscriptionAndAddAubscriber(subscription)
+            //     return null
+            // }
+            // await saveSubscriptionOnly(subscribed)
+            // const data = {
+            //     snippetId: snippet._id,
+            //     userId,
+            // }
+            // fetch(SERVER_URL, {
+            //     method: "post",
+            //     headers: {
+            //         "Content-Type": "application/json",
+            //     },
+            //     body: JSON.stringify(data),
+            // })
         } catch (err) {
             console.log("Error", err)
             return null

@@ -46,7 +46,7 @@ export async function action({ request }) {
     const db = await connectDb()
 
     try {
-        await db.models.Snippet.findOneAndUpdate(
+        const test = await db.models.Snippet.findOneAndUpdate(
             { _id: snippetId },
             {
                 $set: {
@@ -59,16 +59,24 @@ export async function action({ request }) {
             }
         )
 
-        // Sendt push notification, snippet has been updated
+        const subs = await db.models.Snippet.findById(snippetId).select({
+            subscribers: 1,
+            _id: 0,
+        })
+
+        // Sent push notification, snippet has been updated
         await fetch("http://localhost:3000/notificationService", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
             },
             body: JSON.stringify({
-                title: `${title} has been updated`,
-                body: `Language ${languageTag}`,
-                href: `/snippets/snippet/${snippetId}`,
+                push: {
+                    title: `${title} has been updated`,
+                    body: `Language ${languageTag}`,
+                    href: `/snippets/snippet/${snippetId}`,
+                },
+                subs: subs,
             }),
         })
 

@@ -15,49 +15,37 @@ export const action: ActionFunction = async ({ request }) => {
             const data = await request.json()
             console.log(data)
 
-            if (data._method === "addBoth") {
-                try {
-                    const newSubscribtion = await db.models.user.updateOne(
-                        { _id: data.userId },
-                        { subscription: data.subscription }
-                    )
+            const user = await db.models.user.findById(data.userId)
 
-                    console.log(data.snippetId)
-                    console.log(newSubscribtion._id)
+            console.log("herunder")
 
-                    await db.models.Snippet.updateOne(
-                        { _id: data.snippetId },
-                        {
-                            $push: { subscribers: newSubscribtion._id },
-                        }
-                    )
+            console.log(user)
 
-                    return new Response(newSubscribtion, {
-                        headers: {
-                            "Content-Type": "application/json",
-                        },
-                    })
-                } catch (error) {
-                    return json({ status: 400 })
-                }
+            if (!user.subscription.endpoint) {
+                await db.models.user.updateOne(
+                    { _id: data.userId },
+                    { subscription: data.subscription }
+                )
+
+                await db.models.Snippet.updateOne(
+                    { _id: data.snippetId },
+                    {
+                        $addToSet: { subscribers: user._id },
+                    }
+                )
+            } else {
+                await db.models.Snippet.updateOne(
+                    { _id: data.snippetId },
+                    {
+                        $addToSet: { subscribers: user._id.toString() },
+                    }
+                )
             }
-            if (data._method === "addSub") {
-                try {
-                    await db.models.Snippet.updateOne(
-                        { _id: data.snippetId },
-                        {
-                            $push: { subscribers: data.userId },
-                        }
-                    )
 
-                    return new Response(data.userId, {
-                        headers: {
-                            "Content-Type": "application/json",
-                        },
-                    })
-                } catch (error) {
-                    return json({ status: 400 })
-                }
-            }
+            return new Response(data.userId, {
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            })
     }
 }
