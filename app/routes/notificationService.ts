@@ -35,19 +35,13 @@ export const action: ActionFunction = async ({ request }) => {
                 const subscription = await db.models.user
                     .findOne({ _id: sub })
                     .select({ subscription: 1, _id: 0 })
-                console.log("sub: ", subscription.subscription)
-                console.log("pushMessage: ", data.push)
-                console.log(subscription.subscription.endpoint)
 
                 sendNotification(subscription.subscription, data.push)
             })
 
-            // // Send notification to all Subscription
-
             return json({
                 status: 200,
                 message: "Message sent",
-                // subscriptions,
             })
         default:
             return {
