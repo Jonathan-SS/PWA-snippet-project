@@ -3,13 +3,21 @@ import { SearchIcon } from "~/components/Icons"
 import SnippetListItem from "~/components/SnippetListItem"
 import connectDb from "~/db/connectDb.server.js"
 import { Form, useLoaderData, useParams } from "remix"
+import { getUserSession } from "~/sessions.server"
 
-export async function loader({ params }) {
+export async function loader({ params, request }) {
     const db = await connectDb()
+    const session = await getUserSession(request.headers.get("Cookie"))
+    const userId = session.get("userId")
 
     if (params.snippetTag === "all") {
         return await db.models.Snippet.find({
             visibility: true,
+        })
+    }
+    if (params.snippetTag === "mysnippets") {
+        return await db.models.Snippet.find({
+            userId: userId,
         })
     }
 

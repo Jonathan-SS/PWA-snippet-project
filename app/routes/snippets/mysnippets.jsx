@@ -1,5 +1,5 @@
 import { Outlet, useActionData } from "@remix-run/react"
-import { useLoaderData, Form } from "remix"
+import { useLoaderData, Form, useParams } from "remix"
 import { SearchIcon } from "~/components/Icons"
 import SnippetListItem from "~/components/SnippetListItem"
 import connectDb from "~/db/connectDb.server.js"
@@ -70,6 +70,7 @@ export async function action({ request }) {
 export default function MySnippets() {
     const snippets = useLoaderData()
     const actionSnippets = useActionData()
+    const languageTag = "mysnippets"
 
     return (
         <>
@@ -124,6 +125,7 @@ export default function MySnippets() {
                                   <SnippetListItem
                                       key={snippet._id}
                                       snippet={snippet}
+                                      languageTag={languageTag}
                                   />
                               ))}
 
