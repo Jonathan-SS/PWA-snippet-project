@@ -27,7 +27,7 @@ export async function action({ request }) {
             visibility,
             userId: session.get("userId"),
         })
-        return redirect(`/snippets/snippet/${newSnippet._id}`)
+        return redirect(`/snippets/mysnippets/${newSnippet._id}`)
     } catch (error) {
         return json(
             { errors: error.errors, values: Object.fromEntries(form) },
@@ -107,10 +107,10 @@ export default function CreateSnippet() {
                 <select
                     name="visibility"
                     className="text-white dark:bg-gray-700 bg-blue-600"
-                    defaultValue="Public"
+                    defaultValue={true}
                 >
-                    <option value="Public">Public</option>
-                    <option value="Private">Private</option>
+                    <option value={true}>Public</option>
+                    <option value={false}>Private</option>
                 </select>
 
                 <label
