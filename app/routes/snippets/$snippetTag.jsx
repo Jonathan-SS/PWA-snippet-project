@@ -2,28 +2,22 @@ import { Outlet, useActionData } from "@remix-run/react"
 import { SearchIcon } from "~/components/Icons"
 import SnippetListItem from "~/components/SnippetListItem"
 import connectDb from "~/db/connectDb.server.js"
-import { Form, useLoaderData, useParams, useSubmit } from "remix"
+import { getUserSession } from "~/sessions.server"
+import { Form, useLoaderData, useParams } from "remix"
 
 export async function loader({ params, request }) {
     const db = await connectDb()
-    const url = new URL(request.url)
-
-    const searchTerm = url.searchParams.get("search")
-    const sort = url.searchParams.get("search")
-    console.log("sort: ", sort)
-
-    // Search and sort public snippets
-    return await db.models.Snippet.find({
-        title: searchTerm ? { $regex: new RegExp(searchTerm, "i") } : "",
-        visibility: true,
-        languageTag: params.snippetTag,
-    }).sort({
-        [sort]: 1,
-    })
+    const session = await getUserSession(request.headers.get("Cookie"))
+    const userId = session.get("userId")
 
     if (params.snippetTag === "all") {
         return await db.models.Snippet.find({
             visibility: true,
+        })
+    }
+    if (params.snippetTag === "mysnippets") {
+        return await db.models.Snippet.find({
+            userId: userId,
         })
     }
 
