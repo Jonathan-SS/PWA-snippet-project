@@ -115,6 +115,8 @@ export default function Index() {
     const actionSnippets = useActionData()
     const languageTag = useParams().snippetTag
 
+    console.log(languageTag)
+
     return (
         <>
             <div className="border-b md:dark:border-gray-700 mb-4 pb-2 ">

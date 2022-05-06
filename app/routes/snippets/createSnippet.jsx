@@ -107,10 +107,10 @@ export default function CreateSnippet() {
                 <select
                     name="visibility"
                     className="text-white dark:bg-gray-700 bg-blue-600"
-                    defaultValue={true}
+                    defaultValue="Public"
                 >
-                    <option value={true}>Public</option>
-                    <option value={false}>Private</option>
+                    <option value="Public">Public</option>
+                    <option value="Private">Private</option>
                 </select>
 
                 <label

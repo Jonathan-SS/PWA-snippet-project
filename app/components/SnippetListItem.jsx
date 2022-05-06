@@ -17,6 +17,9 @@ export default function SnippetListItem({ snippet, languageTag }) {
                     <p className=" text-white dark:text-gray-300">
                         {displayDate}
                     </p>
+                    <p className=" text-white dark:text-gray-300">
+                        {snippet.visibility}
+                    </p>
                     <StarIcon fill={snippet.favorite} />
                 </div>
             </Link>
