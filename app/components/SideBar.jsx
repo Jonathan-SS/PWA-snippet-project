@@ -33,7 +33,12 @@ export default function SideBar({ languages }) {
         >
             <div className="py-4 rounded mb-auto flex flex-col items-center gap-2 md:block">
                 <div className="w-full flex justify-between items-center">
-                    <SnippieLogo className="w-20" />
+                    <img
+                        src="assets/logo-transparent.png"
+                        alt="Snippie lettermark"
+                        width="100"
+                        height="100"
+                    />
                     <div className="flex justify-between my-4">
                         <DarkmodeButton />
                         <LoginButton />
