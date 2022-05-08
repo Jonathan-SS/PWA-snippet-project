@@ -1,5 +1,5 @@
-const serviceWorkerVersion = "v1.0.0"
-const cacheName = "sw-cache-v1.1.4"
+const serviceWorkerVersion = "v1.0.2"
+const staticCache = `static-cache-${serviceWorkerVersion}`
 const imageCache = `image-cache-${serviceWorkerVersion}`
 
 // https://blog.atulr.com/web-notifications/
@@ -23,53 +23,80 @@ self.addEventListener("install", () => {
 
 self.addEventListener("activate", async () => {
     // This will be called only once when the service worker is activated.
+    // Remove all OLD caches that are not named in CACHE_NAME
+    // If cache is older then 30 days, remove it
 })
 
 // Network first look for cache
 // Give images from cache if available
 // Else fetch from network and cache
 
-self.addEventListener("fetch", (fetchEvent) => {
-    console.log("fetchEvent: ", fetchEvent)
-    console.log(fetch(fetchEvent.request))
-    if (fetchEvent.request.method !== "GET") {
-        // Return all request that is not assets for rendering the snippet application.
-        //  eg. POST, PUT, DELETE, PATCH, HEAD, OPTIONS, TRACE
-        // Like creating new snippets, or updating existing snippets
-        return
-    }
+self.addEventListener("fetch", async (fetchEvent) => {
+    // Return all request that is not assets for rendering the snippet application.
+    //  eg. POST, PUT, DELETE, PATCH, HEAD, OPTIONS, TRACE
+    // Like creating new snippets, or updating existing snippets
+    if (fetchEvent.request.method !== "GET") return
 
-    // Look for an image, check cache othervise fetch and put to cache
-    if (fetchEvent.request.destination === "image") {
+    // ignore chrome extension, e.g don't cache them
+    if (fetchEvent.request.url.includes("chrome-extension")) return
+
+    // fetchEvent.waitUntil(async () => {
+    const fetchResponse = await fetch(fetchEvent.request)
+
+    if (!fetchResponse.ok) return // Return error if not ok
+    // If not ok, and has status code between 500 and 599, return error
+    // If status code is between 400 and 499, return response from cache
+
+    const type = fetchResponse.headers.get("content-type") // Alternativ use fetchEvent.request.destination, content-type more reliable
+
+    // Use image in cache, after fetch and put to cache
+    if (type.includes("image")) {
         fetchEvent.respondWith(
             (async function () {
                 // Checks cache for requst data
                 const cachedResponse = await caches.match(fetchEvent.request)
 
-                // If requst data exists return the data as response
+                // If requst data exists, return the data as response
                 if (cachedResponse) return cachedResponse
-
-                // Fetch requested data, normal behavior
-                const networkResponse = await fetch(fetchEvent.request)
 
                 // Cache the network respose data
                 const cache = await caches.open(imageCache)
-                cache.put(fetchEvent.request, networkResponse.clone())
+                cache.put(fetchEvent.request, fetchResponse.clone())
+                // Alternative:  cache.add(fetchEvent.request) - add to cache, same as fetch + put
 
                 // Return the network data as response
-                return networkResponse
+                return fetchResponse
             })()
         )
-        // return
+        return // stop function after responseWith is resolved
     }
 
-    // // If offline, use cache
-    // fetchEvent.respondWith(
-    //     fetch(fetchEvent.request).catch(() => caches.match(fetchEvent.request))
-    // )
+    // Cache the rest that has same origin e.g css, js, html etc
+    if (fetchEvent.request.host === location.host) {
+        console.log("fetchEvent.request: ", fetchEvent.request)
+        const cache = await caches.open(staticCache)
+        cache.put(fetchEvent.request, fetchResponse.clone())
+    }
+
+    return fetchResponse
 })
 
 // The notificationclick event - https://developers.google.com/web/ilt/pwa/introduction-to-push-notifications
+self.addEventListener("notificationclick", (e) => {
+    const notification = e.notification
+    const href = notification.data.href
+    const action = e.action
+
+    switch (action) {
+        case "explore":
+            clients.openWindow(href)
+            notification.close()
+            break
+        default:
+            notification.close()
+            break
+    }
+})
 
 // Handling the push event in the service worker - https://developers.google.com/web/ilt/pwa/introduction-to-push-notifications
 self.addEventListener("push", function (e) {

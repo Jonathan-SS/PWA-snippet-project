@@ -34,7 +34,7 @@ export default function SideBar({ languages }) {
             <div className="py-4 rounded mb-auto flex flex-col items-center gap-2 md:block">
                 <div className="w-full flex justify-between items-center">
                     <img
-                        src="../assets/logo-transparent.png"
+                        src="/assets/logo-transparent.png"
                         alt="Snippie lettermark"
                         width="100"
                         height="100"
@@ -66,11 +66,11 @@ export default function SideBar({ languages }) {
                             </Link>
                         </li>
                     )}
-                    <li>
+                    {/* <li>
                         <Link to="/snippets/all" className={linkStyles}>
                             All snippets
                         </Link>
-                    </li>
+                    </li> */}
                     {languages.map((language) => {
                         return (
                             <li key={language}>
