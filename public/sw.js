@@ -1,4 +1,6 @@
+const serviceWorkerVersion = "v1.0.0"
 const cacheName = "sw-cache-v1.1.4"
+const imageCache = `image-cache-${serviceWorkerVersion}`
 
 // https://blog.atulr.com/web-notifications/
 // urlB64ToUint8Array is a magic function that will encode the base64 public key
@@ -57,6 +59,15 @@ self.addEventListener("activate", async () => {
 // Else fetch from network and cache
 
 self.addEventListener("fetch", (fetchEvent) => {
+    console.log("fetchEvent: ", fetchEvent)
+    console.log(fetch(fetchEvent.request))
+    if (fetchEvent.request.method !== "GET") {
+        // Return all request that is not assets for rendering the snippet application.
+        //  eg. POST, PUT, DELETE, PATCH, HEAD, OPTIONS, TRACE
+        // Like creating new snippets, or updating existing snippets
+        return
+    }
+
     // Look for an image, check cache othervise fetch and put to cache
     if (fetchEvent.request.destination === "image") {
         fetchEvent.respondWith(
@@ -71,24 +82,20 @@ self.addEventListener("fetch", (fetchEvent) => {
                 const networkResponse = await fetch(fetchEvent.request)
 
                 // Cache the network respose data
-                const cache = await caches.open(cacheName)
+                const cache = await caches.open(imageCache)
                 cache.put(fetchEvent.request, networkResponse.clone())
 
                 // Return the network data as response
                 return networkResponse
             })()
         )
-        return
+        // return
     }
 
-    if (fetchEvent.request.method === "POST") {
-        return
-    }
-
-    // If offline, use cache
-    fetchEvent.respondWith(
-        fetch(fetchEvent.request).catch(() => caches.match(fetchEvent.request))
-    )
+    // // If offline, use cache
+    // fetchEvent.respondWith(
+    //     fetch(fetchEvent.request).catch(() => caches.match(fetchEvent.request))
+    // )
 })
 
 // The notificationclick event - https://developers.google.com/web/ilt/pwa/introduction-to-push-notifications

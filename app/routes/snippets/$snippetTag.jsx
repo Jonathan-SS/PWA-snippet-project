@@ -51,7 +51,6 @@ export async function loader({ params, request }) {
 
 export default function Index() {
     const snippets = useLoaderData() || []
-    console.log("snippets: ", snippets)
     const submit = useSubmit()
     const languageTag = useParams().snippetTag
 
