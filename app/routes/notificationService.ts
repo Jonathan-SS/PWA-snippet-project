@@ -14,7 +14,7 @@ const sendNotification = async (subscription, dataToSend) => {
     console.log("web-push: ", subscription)
 
     try {
-        webpush.sendNotification(subscription, JSON.stringify(dataToSend))
+        await webpush.sendNotification(subscription, JSON.stringify(dataToSend))
     } catch (error) {
         console.log("error: ", error)
     }
@@ -27,8 +27,6 @@ export const action: ActionFunction = async ({ request }) => {
     switch (request.method) {
         case "POST":
             const data = await request.json()
-
-            console.log(data)
 
             console.log("subscriptions: ", data.subs.subscribers)
             data.subs.subscribers.forEach(async (sub) => {

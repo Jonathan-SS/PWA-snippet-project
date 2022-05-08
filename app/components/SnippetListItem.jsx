@@ -7,7 +7,7 @@ export default function SnippetListItem({ snippet, languageTag }) {
     })
 
     return (
-        <li className="rounded-lg hover:bg-blue-600  bg-blue-800 dark:bg-gray-800 dark:hover:bg-gray-700 p-3 mb-1 min-w-200-px">
+        <li className="rounded-lg hover:bg-blue-600  bg-blue-800 dark:bg-gray-800 dark:hover:bg-gray-700 p-3 mb-1 min-w-300-px">
             <Link to={`/snippets/${languageTag}/${snippet._id}`}>
                 <div className="flex justify-between text-gray-300">
                     <h2 className=" text-white text-xl font-semibold">

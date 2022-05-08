@@ -70,40 +70,26 @@ export default function BookPage() {
 
     useEffect(() => {
         setCopyState(true)
+        snippet.subscribers?.includes(userId)
     }, [])
 
-    const saveSubscriptionAndAddAubscriber = async (subscription) => {
-        const SERVER_URL = `${location.origin}/subscriptionService`
-        const data = {
-            subscription,
-            snippetId: snippet._id,
-            _method: "addBoth",
-            userId: userId,
+    async function unSubToSnip() {
+        const SERVER_URL = `${location.origin}/unSubscriptionService`
+        try {
+            fetch(SERVER_URL, {
+                method: "post",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    snippetId: snippet._id,
+                    userId: userId,
+                }),
+            })
+        } catch (err) {
+            console.log("Error", err)
+            return null
         }
-        return fetch(SERVER_URL, {
-            method: "post",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(data),
-        })
-    }
-    const saveSubscriptionOnly = async (subscription) => {
-        const SERVER_URL = `${location.origin}/subscriptionService`
-        const data = {
-            subscription,
-            snippetId: snippet._id,
-            _method: "addSub",
-            userId,
-        }
-
-        return fetch(SERVER_URL, {
-            method: "post",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(data),
-        })
     }
 
     async function subToSnip() {
@@ -133,36 +119,6 @@ export default function BookPage() {
                     userId: userId,
                 }),
             })
-
-            // const VAPID_PUBLIC_KEY =
-            //     "BEApaM42xO4ckE_i6WH0SPyfAXWPtZJncv4d_foykgnhTGMaLsbmXOWdldaj7YTy4NJIzPdq4jO6Jl2lME_fg_E"
-            // // const applicationServerKey = urlB64ToUint8Array(VAPID_PUBLIC_KEY)
-            // const options = {
-            //     applicationServerKey: VAPID_PUBLIC_KEY,
-            //     userVisibleOnly: true,
-            // }
-
-            // const registration = await navigator.serviceWorker.getRegistration()
-            // const subscribed = await registration.pushManager.getSubscription()
-            // if (subscribed === null) {
-            //     const subscription = await registration.pushManager.subscribe(
-            //         options
-            //     )
-            //     await saveSubscriptionAndAddAubscriber(subscription)
-            //     return null
-            // }
-            // await saveSubscriptionOnly(subscribed)
-            // const data = {
-            //     snippetId: snippet._id,
-            //     userId,
-            // }
-            // fetch(SERVER_URL, {
-            //     method: "post",
-            //     headers: {
-            //         "Content-Type": "application/json",
-            //     },
-            //     body: JSON.stringify(data),
-            // })
         } catch (err) {
             console.log("Error", err)
             return null
@@ -170,14 +126,13 @@ export default function BookPage() {
     }
 
     return (
-        <div className="mt-4 overflow-y-scroll h-4/5 md:h-full md:pb-10 scrollbar-hide flex-shrink basis-4/5 ">
+        <div className="mt-4 overflow-y-scroll h-4/5 md:h-full md:pb-10 scrollbar-hide flex-shrink basis-4/6 ">
             <div className="flex flex-wrap  items-center">
                 <h1 className="text-4xl font-bold w-full">{snippet.title}</h1>
                 <div className="my-2 flex gap-5 dark:text-gray-400 w-full">
                     <p>Date: {displayDate}</p>
                     <p>Language: {snippet.languageTag}</p>
                 </div>
-                <button onClick={subToSnip}>sub</button>
 
                 <Form
                     method="post"
@@ -228,15 +183,21 @@ export default function BookPage() {
                     </Form>
                 ) : null}
 
-                <Form
-                    method="post"
-                    className=" ml-4 flex items-center h-fit bg-blue-800 hover:bg-blue-600 dark:bg-gray-800 dark:hover:bg-gray-700 rounded-lg px-2 py-1"
-                >
-                    <input type="hidden" name="snippetId" value={snippet._id} />
-                    <input type="hidden" name="_action" value="subToSnip" />
-
-                    <button type="submit">Subscribe to this snippet</button>
-                </Form>
+                {snippet.subscribers?.includes(userId) ? (
+                    <button
+                        className="ml-4 flex items-center h-fit bg-blue-800 hover:bg-blue-600 dark:bg-gray-800 dark:hover:bg-gray-700 rounded-lg px-2 py-1"
+                        onClick={unSubToSnip}
+                    >
+                        Unsubscribe to snippet
+                    </button>
+                ) : (
+                    <button
+                        className="ml-4 flex items-center h-fit bg-blue-800 hover:bg-blue-600 dark:bg-gray-800 dark:hover:bg-gray-700 rounded-lg px-2 py-1"
+                        onClick={subToSnip}
+                    >
+                        Subscribe to snippet
+                    </button>
+                )}
             </div>
 
             <h2 className=" mt-2 text-xl font-semibold">Description</h2>

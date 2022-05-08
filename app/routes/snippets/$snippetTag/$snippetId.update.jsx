@@ -72,15 +72,16 @@ export async function action({ request }) {
             },
             body: JSON.stringify({
                 push: {
-                    title: `${title} has been updated`,
-                    body: `Language ${languageTag}`,
+                    title: ` A snippet you subscribe to has been updated`,
+                    body: `Click to see the latest changes on the snippet: ${title}`,
                     href: `/snippets/snippet/${snippetId}`,
+                    image: "/snippie.png",
                 },
                 subs: subs,
             }),
         })
 
-        return redirect(`/snippets/snippet/${snippetId}`)
+        return redirect(`/snippets/mysnippets/${snippetId}`)
     } catch (error) {
         return json(
             { errors: error.errors, values: Object.fromEntries(form) },
@@ -94,7 +95,7 @@ export default function CreateSnippet() {
 
     const snippetToUpdate = useLoaderData()
     return (
-        <div className="overflow-y-scroll px-4 md:p-0 scrollbar-hide">
+        <div className="mt-4 overflow-y-scroll h-4/5 md:h-full md:pb-10 scrollbar-hide flex-shrink basis-4/6 ">
             <h1 className="text-4xl font-bold mb-2  mr-2">Update snippet</h1>
             <Form method="post">
                 <label htmlFor="title" className="block text-xl font-semibold">
