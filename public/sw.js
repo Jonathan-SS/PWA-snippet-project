@@ -67,7 +67,7 @@ self.addEventListener("activate", async () => {
 self.addEventListener("fetch", async function (event) {
     if (event.request.url.includes("chrome-extension")) return // ignore chrome extension, e.g don't cache them
     if (event.request.method !== "GET") return
-
+    //noget
     event.respondWith(
         fetch(event.request).catch(function () {
             return caches.match(event.request)
