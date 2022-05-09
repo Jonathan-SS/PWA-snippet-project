@@ -73,7 +73,7 @@ self.addEventListener("fetch", async function (event) {
             return caches.match(event.request)
         })
     )
-
+    const fetchResponse = await fetch(event.request)
     if (fetchResponse) {
         const cache = await caches.open(staticCache)
         cache.put(event.request, fetchResponse.clone())
