@@ -1,13 +1,19 @@
-import { Link } from "@remix-run/react"
+import { Link, NavLink } from "@remix-run/react"
 import { useEffect, useState } from "react"
 
+import { useAccount } from "../hooks/useAccount"
 import DarkmodeButton from "./DarkmodeButton"
 import { SnippieLogo } from "./Icons"
 import LoginButton from "./LoginButton"
-import { useAccount } from "../hooks/useAccount"
 
-export default function SideBar() {
-    const [isOnLine, setIsOnLine] = useState(false)
+const accentLinkStyles =
+    "capitalize flex items-center p-2 text-base font-normal rounded-lg hover:bg-green-600 bg-green-800 dark:bg-green-800 text-white dark:hover:bg-green-700"
+const linkStyles =
+    "capitalize flex items-center p-2 text-base font-normal rounded-lg hover:bg-blue-600 bg-blue-800 dark:bg-gray-800 text-white dark:hover:bg-gray-700"
+
+export default function SideBar({ languages }) {
+    const [isOnLine, setIsOnLine] = useState(true)
+
     const loggedIn = useAccount()
 
     React.useEffect(() => {
@@ -27,7 +33,12 @@ export default function SideBar() {
         >
             <div className="py-4 rounded mb-auto flex flex-col items-center gap-2 md:block">
                 <div className="w-full flex justify-between items-center">
-                    <SnippieLogo className="w-20" />
+                    <img
+                        src="/assets/logo-transparent.png"
+                        alt="Snippie lettermark"
+                        width="100"
+                        height="100"
+                    />
                     <div className="flex justify-between my-4">
                         <DarkmodeButton />
                         <LoginButton />
@@ -38,7 +49,7 @@ export default function SideBar() {
                         <li>
                             <Link
                                 to="/snippets/createSnippet"
-                                className="flex items-center p-2 text-base font-normal rounded-lg hover:bg-green-600 bg-green-800 dark:bg-green-800 text-white dark:hover:bg-green-700"
+                                className={accentLinkStyles}
                             >
                                 Create snippet
                             </Link>
@@ -49,53 +60,34 @@ export default function SideBar() {
                         <li>
                             <Link
                                 to="/snippets/mysnippets"
-                                className="flex items-center p-2 text-base font-normal rounded-lg hover:bg-green-600 bg-green-800 dark:bg-green-800 text-white dark:hover:bg-green-700"
+                                className={accentLinkStyles}
                             >
                                 My snippets
                             </Link>
                         </li>
                     )}
-
                     <li>
-                        <Link
-                            to="/snippets/all"
-                            className="flex items-center p-2 text-base font-normal rounded-lg hover:bg-blue-600 bg-blue-800 dark:bg-gray-800 text-white dark:hover:bg-gray-700"
-                        >
+                        <Link to="/snippets/all" className={linkStyles}>
                             All snippets
                         </Link>
                     </li>
-                    <li>
-                        <Link
-                            to="/snippets/JavaScript"
-                            className="flex items-center p-2 text-base font-normal  rounded-lg hover:bg-blue-600 bg-blue-800 dark:bg-gray-800 text-white dark:hover:bg-gray-700"
-                        >
-                            JavaScript snippets
-                        </Link>
-                    </li>
-                    <li>
-                        <Link
-                            to="/snippets/PHP"
-                            className="flex items-center p-2 text-base font-normal  rounded-lg hover:bg-blue-600 bg-blue-800 dark:bg-gray-800 text-white dark:hover:bg-gray-700"
-                        >
-                            PHP snippets
-                        </Link>
-                    </li>
-                    <li>
-                        <Link
-                            to="/snippets/CSS"
-                            className="flex items-center p-2 text-base font-normal  rounded-lg hover:bg-blue-600 bg-blue-800 dark:bg-gray-800 text-white dark:hover:bg-gray-700"
-                        >
-                            CSS snippets
-                        </Link>
-                    </li>
-                    <li>
-                        <Link
-                            to="/snippets/HTML"
-                            className="flex items-center p-2 text-base font-normal  rounded-lg hover:bg-blue-600 bg-blue-800 dark:bg-gray-800 text-white dark:hover:bg-gray-700"
-                        >
-                            HTML snippets
-                        </Link>
-                    </li>
+                    {languages.map((language) => {
+                        return (
+                            <li key={language}>
+                                <NavLink
+                                    to={`/snippets/${language}`}
+                                    className={({ isActive }) =>
+                                        linkStyles +
+                                        (isActive
+                                            ? " dark:bg-gray-600 pr-4"
+                                            : "")
+                                    }
+                                >
+                                    {language}
+                                </NavLink>
+                            </li>
+                        )
+                    })}
                 </ul>
             </div>
         </aside>

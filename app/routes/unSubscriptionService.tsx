@@ -7,7 +7,7 @@ export const action: ActionFunction = async ({ request }) => {
     switch (request.method) {
         case "POST":
             const data = await request.json()
-            console.log(data)
+            console.log(data.snippetId)
 
             const test = await db.models.Snippet.updateOne(
                 { _id: data.snippetId },

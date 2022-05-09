@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 
 export function useAccount(): boolean {
-    const [loggedIn, setLoggedIn] = useState<boolean>()
+    const [loggedIn, setLoggedIn] = useState<boolean>(false)
 
     useEffect(() => {
         ;(async () => {
