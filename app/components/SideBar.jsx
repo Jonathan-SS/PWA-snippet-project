@@ -66,11 +66,11 @@ export default function SideBar({ languages }) {
                             </Link>
                         </li>
                     )}
-                    {/* <li>
+                    <li>
                         <Link to="/snippets/all" className={linkStyles}>
                             All snippets
                         </Link>
-                    </li> */}
+                    </li>
                     {languages.map((language) => {
                         return (
                             <li key={language}>

@@ -26,13 +26,13 @@ export const links = () => [
     {
         rel: "apple-touch-icon",
         sizes: "76x76",
-        href: "assets/apple-touch-icon.png",
+        href: "/assets/apple-touch-icon.png",
     },
     {
         rel: "icon",
         type: "image/png",
         sizes: "32x32",
-        href: "assets/favicon-32x32.png",
+        href: "/assets/favicon-32x32.png",
     },
     {
         rel: "icon",
@@ -47,7 +47,7 @@ export const links = () => [
     {
         rel: "mask-icon",
         color: "#742914",
-        href: "assets/safari-pinned-tab.svg",
+        href: "/assets/safari-pinned-tab.svg",
     },
     {
         rel: "apple-mobile-web-app-title",
