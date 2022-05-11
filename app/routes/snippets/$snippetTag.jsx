@@ -126,7 +126,9 @@ export default function Index() {
                             />
                         ))}
 
-                        {snippets.length === 0 && <h2>No snippets found</h2>}
+                        {snippets.length === 0 && (
+                            <h2>No snippets found at all</h2>
+                        )}
                     </ul>
                 </div>
                 <Outlet />
