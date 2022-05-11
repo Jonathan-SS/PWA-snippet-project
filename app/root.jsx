@@ -1,6 +1,7 @@
 import connectDb from "~/db/connectDb.server.js"
 import styles from "~/tailwind.css"
 import highStyles from "highlight.js/styles/atom-one-dark.css"
+import { NotFound } from "./components/Icons/NotFound.jsx"
 import {
     Links,
     LiveReload,
@@ -9,6 +10,8 @@ import {
     Scripts,
     ScrollRestoration,
     useLoaderData,
+    useCatch,
+    Link,
 } from "remix"
 
 import SideBar from "./components/SideBar"
@@ -90,21 +93,54 @@ export default function App() {
     const languages = useLoaderData() || []
 
     return (
+        <Layout>
+            <SideBar languages={languages} />
+            <main className="p-4 overflow-hidden md:overflow-auto col-span-4">
+                <Outlet />
+            </main>
+        </Layout>
+    )
+}
+
+export function Layout({ children }) {
+    return (
         <html lang="en" className="dark">
             <head>
                 <Meta />
                 <Links />
             </head>
             <body className="h-screen dark:bg-gray-900 dark:text-white font-sans lg:grid lg:grid-cols-5">
-                <SideBar languages={languages} />
-                <main className="p-4 overflow-hidden md:overflow-auto col-span-4">
-                    <Outlet />
-                </main>
-
+                {children}
                 <ScrollRestoration />
                 <Scripts />
                 <LiveReload />
             </body>
         </html>
+    )
+}
+
+export function CatchBoundary() {
+    const caught = useCatch()
+    return (
+        <Layout>
+            <main className=" flex justify-center items-center col-span-5 flex-col ">
+                <NotFound className=" w-1/2" />
+                <h1 className=" text-5xl font-bold">{caught.statusText}</h1>
+                <Link
+                    className="text-white flex items-center h-fit bg-blue-800 hover:bg-blue-600 dark:bg-gray-800 dark:hover:bg-gray-700 rounded-lg px-4 py-2 mt-2"
+                    to="/"
+                >
+                    Go to the home page
+                </Link>
+            </main>
+        </Layout>
+    )
+}
+
+export function ErrorBoundary({ error }) {
+    return (
+        <h1 className="text-red-500 font-bold">
+            {error.name}: {error.message}
+        </h1>
     )
 }
