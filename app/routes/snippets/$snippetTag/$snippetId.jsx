@@ -185,14 +185,14 @@ export default function BookPage() {
 
                 {snippet.subscribers?.includes(userId) ? (
                     <button
-                        className="ml-4 flex items-center h-fit bg-blue-800 hover:bg-blue-600 dark:bg-gray-800 dark:hover:bg-gray-700 rounded-lg px-2 py-1"
+                        className=" text-white ml-4 flex items-center h-fit bg-blue-800 hover:bg-blue-600 dark:bg-gray-800 dark:hover:bg-gray-700 rounded-lg px-2 py-1"
                         onClick={unSubToSnip}
                     >
                         Unsubscribe to snippet
                     </button>
                 ) : (
                     <button
-                        className="ml-4 flex items-center h-fit bg-blue-800 hover:bg-blue-600 dark:bg-gray-800 dark:hover:bg-gray-700 rounded-lg px-2 py-1"
+                        className="text-white ml-4 flex items-center h-fit bg-blue-800 hover:bg-blue-600 dark:bg-gray-800 dark:hover:bg-gray-700 rounded-lg px-2 py-1"
                         onClick={subToSnip}
                     >
                         Subscribe to snippet
