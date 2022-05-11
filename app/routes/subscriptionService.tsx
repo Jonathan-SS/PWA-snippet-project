@@ -24,13 +24,13 @@ export const action: ActionFunction = async ({ request }) => {
             if (!user.subscription.endpoint) {
                 await db.models.user.updateOne(
                     { _id: data.userId },
-                    { subscription: data.subscription.toString() }
+                    { subscription: data.subscription }
                 )
 
                 await db.models.Snippet.updateOne(
                     { _id: data.snippetId },
                     {
-                        $addToSet: { subscribers: user._id },
+                        $addToSet: { subscribers: user._id.toString() },
                     }
                 )
             } else {

@@ -108,6 +108,7 @@ export default function BookPage() {
             if (!subscription) {
                 subscription = await registration.pushManager.subscribe(options)
             }
+
             fetch(SERVER_URL, {
                 method: "post",
                 headers: {
