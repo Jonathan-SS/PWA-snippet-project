@@ -2,7 +2,7 @@ import { Outlet, useSubmit } from "@remix-run/react"
 import { SearchIcon } from "~/components/Icons"
 import SnippetListItem from "~/components/SnippetListItem"
 import connectDb from "~/db/connectDb.server.js"
-import { getUserSession } from "~/sessions.server"
+import { getUserSession, requireUserSession } from "~/sessions.server"
 import { Form, useLoaderData, useParams } from "remix"
 
 export async function loader({ params, request }) {
@@ -33,6 +33,19 @@ export async function loader({ params, request }) {
                 : sharedQuery
         ).sort({ [sort]: -1 })
 
+    if (languageTag === "mysnippets") {
+        requireUserSession(request)
+        return await db.models.Snippet.find(
+            title
+                ? {
+                      title: { $regex: new RegExp(title, "i") },
+                      userId: userId,
+                  }
+                : {
+                      userId: userId,
+                  }
+        ).sort({ [sort]: -1 })
+    }
     // Search in selected snippet languages,
     return await db.models.Snippet.find(
         title
@@ -62,8 +75,10 @@ export default function Index() {
         <>
             <div className="border-b md:dark:border-gray-700 mb-4 pb-2 ">
                 <div className="flex items-center justify-between">
-                    <h1 className="text-2xl font-bold">
-                        {languageTag} Snippets
+                    <h1 className="text-2xl font-bold capitalize">
+                        {languageTag === "mysnippets"
+                            ? "My snippets"
+                            : `${languageTag} Snippets`}
                     </h1>
                 </div>
 
