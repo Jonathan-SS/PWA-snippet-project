@@ -61,6 +61,7 @@ export async function action({ request }) {
 
 export default function BookPage() {
     const { snippet, userId } = useLoaderData()
+    const [subs, setSub] = useState(false)
     const dateAdded = new Date(snippet.dateAdded)
     const displayDate = dateAdded.toLocaleDateString("da-DK", {
         dateStyle: "long",
@@ -70,8 +71,8 @@ export default function BookPage() {
 
     useEffect(() => {
         setCopyState(true)
-        snippet.subscribers?.includes(userId)
-    }, [])
+        setSub(snippet.subscribers?.includes(userId))
+    }, [snippet.subscribers])
 
     async function unSubToSnip() {
         const SERVER_URL = `${location.origin}/unSubscriptionService`
@@ -86,6 +87,7 @@ export default function BookPage() {
                     userId: userId,
                 }),
             })
+            setSub(false)
         } catch (err) {
             console.log("Error", err)
             return null
@@ -120,6 +122,7 @@ export default function BookPage() {
                     userId: userId,
                 }),
             })
+            setSub(true)
         } catch (err) {
             console.log("Error", err)
             return null
@@ -184,7 +187,7 @@ export default function BookPage() {
                     </Form>
                 ) : null}
 
-                {snippet.subscribers?.includes(userId) ? (
+                {subs ? (
                     <button
                         className=" text-white ml-4 flex items-center h-fit bg-blue-800 hover:bg-blue-600 dark:bg-gray-800 dark:hover:bg-gray-700 rounded-lg px-2 py-1"
                         onClick={unSubToSnip}

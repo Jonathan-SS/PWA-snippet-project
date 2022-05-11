@@ -5,12 +5,6 @@ export const action: ActionFunction = async ({ request }) => {
     const db = await connectDb()
 
     switch (request.method) {
-        case "DELETE":
-            await db.models.Subscribtion.deleteMany({})
-            return json({
-                status: 200,
-                message: "Subscribtions deleted",
-            })
         case "POST":
             const data = await request.json()
             console.log(data)
