@@ -24,7 +24,7 @@ export const action: ActionFunction = async ({ request }) => {
             if (!user.subscription.endpoint) {
                 await db.models.user.updateOne(
                     { _id: data.userId },
-                    { subscription: data.subscription }
+                    { subscription: data.subscription.toString() }
                 )
 
                 await db.models.Snippet.updateOne(
