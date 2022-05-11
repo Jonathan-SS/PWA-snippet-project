@@ -1,14 +1,14 @@
 import connectDb from "~/db/connectDb.server"
+import { getUserSession } from "~/sessions.server"
 import {
     Form,
     json,
     redirect,
     useActionData,
+    useCatch,
     useLoaderData,
     useSubmit,
-    useCatch,
 } from "remix"
-import { getUserSession } from "~/sessions.server"
 
 export async function loader({ params, request }) {
     const db = await connectDb()
@@ -65,7 +65,7 @@ export async function action({ request }) {
         })
 
         // Sent push notification, snippet has been updated
-        await fetch("http://localhost:3000/notificationService", {
+        await fetch(location.origin + "/notificationService", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
