@@ -19,8 +19,6 @@ export const action: ActionFunction = async ({ request }) => {
 
             console.log("herunder")
 
-            console.log(user)
-
             if (!user.subscription.endpoint) {
                 await db.models.user.updateOne(
                     { _id: data.userId },
@@ -42,7 +40,7 @@ export const action: ActionFunction = async ({ request }) => {
                 )
             }
 
-            return new Response(data.userId, {
+            return new Response(data, {
                 headers: {
                     "Content-Type": "application/json",
                 },
