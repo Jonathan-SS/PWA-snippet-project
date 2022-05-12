@@ -61,7 +61,7 @@ export default function CreateSnippet() {
                     className={
                         "w-full min-w-[200px] " +
                         (actionData && actionData.errors?.description
-                            ? "border-2 border-red-500 rounded-lg px-2 dark:bg-gray-700 resize-none bg-blue-600 text-white dark:text-black"
+                            ? "border-2 border-red-500 rounded-lg px-2 dark:bg-gray-700 resize-none bg-blue-600 text-white "
                             : " rounded-lg  px-2 dark:bg-gray-700 resize-none bg-blue-600 text-white")
                     }
                 />
@@ -132,7 +132,7 @@ export default function CreateSnippet() {
                     className={
                         "w-full min-w-[200px] " +
                         (actionData && actionData.errors?.description
-                            ? "border-2 border-red-500 rounded-lg px-2 dark:bg-gray-700 resize-none bg-blue-600 text-white dark:text-black"
+                            ? "border-2 border-red-500 rounded-lg px-2 dark:bg-gray-700 resize-none bg-blue-600 text-white "
                             : " rounded-lg  px-2 dark:bg-gray-700 resize-none bg-blue-600 text-white")
                     }
                 />
@@ -156,7 +156,7 @@ export default function CreateSnippet() {
                     className={
                         "w-full min-w-[200px] " +
                         (actionData && actionData.errors?.description
-                            ? "border-2 border-red-500 rounded-lg px-2 dark:bg-gray-700 resize-none bg-blue-600 text-white dark:text-black"
+                            ? "border-2 border-red-500 rounded-lg px-2 dark:bg-gray-700 resize-none bg-blue-600 text-white "
                             : " rounded-lg  px-2 dark:bg-gray-700 resize-none bg-blue-600 text-white")
                     }
                 />
