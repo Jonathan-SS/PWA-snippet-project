@@ -104,7 +104,6 @@ export default function BookPage() {
                 applicationServerKey: VAPID_PUBLIC_KEY,
                 userVisibleOnly: true,
             }
-            console.log("noget")
             if (!subscription) {
                 subscription = await registration.pushManager.subscribe(options)
             }

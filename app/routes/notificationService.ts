@@ -29,6 +29,7 @@ export const action: ActionFunction = async ({ request }) => {
             const data = await request.json()
 
             console.log("subscriptions: ", data.subs.subscribers)
+            // TODO: make an inital fetch to get the subscribers
             data.subs.subscribers.forEach(async (sub) => {
                 const subscription = await db.models.user
                     .findOne({ _id: sub })
