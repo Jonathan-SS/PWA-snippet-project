@@ -17,8 +17,13 @@ const saveSubscription = async (subscription) => {
     })
 }
 
-self.addEventListener("install", () => {
-    //console.log("SW Installed")
+self.addEventListener("install", (e) => {
+    e.waitUntil(async () => {
+        const cache = await caches.open(staticCache)
+        const ikkeFundetSide = `${location.origin}/dethereren404`
+        const fetchResponse = await fetch(ikkeFundetSide)
+        cache.put(ikkeFundetSide, fetchResponse.clone())
+    })
 })
 
 self.addEventListener("activate", async () => {
@@ -65,12 +70,15 @@ self.addEventListener("activate", async () => {
 //     return response
 // })
 self.addEventListener("fetch", async function (event) {
+    const ikkeFundetSide = `${location.origin}/dethereren404`
     if (event.request.url.includes("chrome-extension")) return // ignore chrome extension, e.g don't cache them
     if (event.request.method !== "GET") return
     //noget
     event.respondWith(
-        fetch(event.request).catch(function () {
-            return caches.match(event.request)
+        fetch(event.request).catch(() => {
+            return caches.match(event.request).catch(() => {
+                return caches.match(ikkeFundetSide)
+            })
         })
     )
     const fetchResponse = await fetch(event.request)

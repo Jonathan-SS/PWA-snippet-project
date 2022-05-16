@@ -45,7 +45,7 @@ export default function SideBar({ languages }) {
                     </div>
                 </div>
                 <ul className="flex align-center overflow-x-scroll w-full scrollbar-hide gap-3 lg:block lg:space-y-2 ">
-                    {isOnLine && (
+                    {isOnLine && loggedIn && (
                         <li>
                             <Link
                                 to="/snippets/createSnippet"

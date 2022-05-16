@@ -11,7 +11,7 @@ webpush.setVapidDetails(
 
 //function to send the notification to the subscribed device
 const sendNotification = async (subscription, dataToSend) => {
-    console.log("web-push: ", subscription)
+    console.log("web-push: ", JSON.stringify(subscription))
 
     try {
         await webpush.sendNotification(subscription, JSON.stringify(dataToSend))

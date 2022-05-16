@@ -5,12 +5,6 @@ export const action: ActionFunction = async ({ request }) => {
     const db = await connectDb()
 
     switch (request.method) {
-        case "DELETE":
-            await db.models.Subscribtion.deleteMany({})
-            return json({
-                status: 200,
-                message: "Subscribtions deleted",
-            })
         case "POST":
             const data = await request.json()
             console.log(data)
@@ -24,13 +18,13 @@ export const action: ActionFunction = async ({ request }) => {
             if (!user.subscription.endpoint) {
                 await db.models.user.updateOne(
                     { _id: data.userId },
-                    { subscription: data.subscription.toString() }
+                    { subscription: data.subscription }
                 )
 
                 await db.models.Snippet.updateOne(
                     { _id: data.snippetId },
                     {
-                        $addToSet: { subscribers: user._id },
+                        $addToSet: { subscribers: user._id.toString() },
                     }
                 )
             } else {

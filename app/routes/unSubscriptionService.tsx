@@ -7,6 +7,8 @@ export const action: ActionFunction = async ({ request }) => {
     switch (request.method) {
         case "POST":
             const data = await request.json()
+            console.log("herunder2")
+
             console.log(data.snippetId)
 
             const test = await db.models.Snippet.updateOne(

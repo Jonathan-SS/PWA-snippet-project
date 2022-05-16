@@ -139,8 +139,19 @@ export function CatchBoundary() {
 
 export function ErrorBoundary({ error }) {
     return (
-        <h1 className="text-red-500 font-bold">
-            {error.name}: {error.message}
-        </h1>
+        <Layout>
+            <main className=" flex justify-center items-center col-span-5 flex-col ">
+                <NotFound className=" w-1/2" />
+                <h1 className="text-red-500 font-bold">
+                    {error.name}: {error.message}
+                </h1>
+                <Link
+                    className="text-white flex items-center h-fit bg-blue-800 hover:bg-blue-600 dark:bg-gray-800 dark:hover:bg-gray-700 rounded-lg px-4 py-2 mt-2"
+                    to="/"
+                >
+                    Go to the home page
+                </Link>
+            </main>
+        </Layout>
     )
 }

@@ -63,9 +63,11 @@ export async function action({ request }) {
             subscribers: 1,
             _id: 0,
         })
+        console.log("herunder")
+        const url = new URL(request.url)
 
         // Sent push notification, snippet has been updated
-        await fetch(location.origin + "/notificationService", {
+        const testFetch = await fetch(`${url.origin}/notificationService`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -74,12 +76,14 @@ export async function action({ request }) {
                 push: {
                     title: ` A snippet you subscribe to has been updated`,
                     body: `Click to see the latest changes on the snippet: ${title}`,
-                    href: `/snippets/snippet/${snippetId}`,
+                    href: `/snippets/all/${snippetId}`,
                     image: "/snippie.png",
                 },
                 subs: subs,
             }),
         })
+
+        console.log(testFetch)
 
         return redirect(`/snippets/mysnippets/${snippetId}`)
     } catch (error) {
