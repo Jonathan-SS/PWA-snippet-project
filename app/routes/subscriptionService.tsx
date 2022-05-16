@@ -11,11 +11,8 @@ export const action: ActionFunction = async ({ request }) => {
 
             const user = await db.models.user.findById(data.userId)
 
-            console.log("herunder")
-
-            console.log(user)
-
             if (!user.subscription.endpoint) {
+                // TODO: add subscriptions to array list
                 await db.models.user.updateOne(
                     { _id: data.userId },
                     { subscription: data.subscription }
@@ -28,6 +25,7 @@ export const action: ActionFunction = async ({ request }) => {
                     }
                 )
             } else {
+                // If user already has endpoint
                 await db.models.Snippet.updateOne(
                     { _id: data.snippetId },
                     {

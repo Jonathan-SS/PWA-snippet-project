@@ -2,33 +2,14 @@ const serviceWorkerVersion = "v1.0.2"
 const staticCache = `static-cache-${serviceWorkerVersion}`
 const imageCache = `image-cache-${serviceWorkerVersion}`
 
-// https://blog.atulr.com/web-notifications/
-// urlB64ToUint8Array is a magic function that will encode the base64 public key
-// to Array buffer which is needed by the subscription option
-
-const saveSubscription = async (subscription) => {
-    const SERVER_URL = `${location.origin}/subscriptionService`
-    return fetch(SERVER_URL, {
-        method: "post",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify(subscription),
-    })
-}
-
 self.addEventListener("install", (e) => {
-    e.waitUntil(async () => {
-        const cache = await caches.open(staticCache)
-        const ikkeFundetSide = `${location.origin}/dethereren404`
-        const fetchResponse = await fetch(ikkeFundetSide)
-        cache.put(ikkeFundetSide, fetchResponse.clone())
-    })
+    //    TODO: Cache pages on install, e.g error pages, etc.
+    // TODO: cache static images on install
 })
 
 self.addEventListener("activate", async () => {
     // This will be called only once when the service worker is activated.
-    // Remove all OLD caches that are not named in CACHE_NAME
+    // TODO: Remove all OLD caches that are not named in CACHE_NAME
     // If cache is older then 30 days, remove it
 })
 
@@ -73,7 +54,7 @@ self.addEventListener("fetch", async function (event) {
     const ikkeFundetSide = `${location.origin}/dethereren404`
     if (event.request.url.includes("chrome-extension")) return // ignore chrome extension, e.g don't cache them
     if (event.request.method !== "GET") return
-    //noget
+
     event.respondWith(
         fetch(event.request).catch(() => {
             return caches.match(event.request).catch(() => {

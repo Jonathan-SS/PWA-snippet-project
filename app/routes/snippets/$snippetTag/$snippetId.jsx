@@ -1,9 +1,9 @@
 import { CopyIcon, StarIcon } from "~/components/Icons"
+import connectDb from "~/db/connectDb.server"
 import { useEffect, useState } from "react"
 import Highlight from "react-highlight"
 import { Link } from "react-router-dom"
 import { Form, json, redirect, useCatch, useLoaderData, useParams } from "remix"
-import connectDb from "~/db/connectDb.server"
 
 import { getUserSession } from "../../../sessions.server"
 
@@ -110,6 +110,7 @@ export default function BookPage() {
                 subscription = await registration.pushManager.subscribe(options)
             }
 
+            // TODO: check denied subscribtion
             fetch(SERVER_URL, {
                 method: "post",
                 headers: {

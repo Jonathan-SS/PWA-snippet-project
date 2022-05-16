@@ -11,8 +11,6 @@ webpush.setVapidDetails(
 
 //function to send the notification to the subscribed device
 const sendNotification = async (subscription, dataToSend) => {
-    console.log("web-push: ", JSON.stringify(subscription))
-
     try {
         await webpush.sendNotification(subscription, JSON.stringify(dataToSend))
     } catch (error) {
@@ -21,14 +19,12 @@ const sendNotification = async (subscription, dataToSend) => {
 }
 
 export const action: ActionFunction = async ({ request }) => {
-    console.log("default")
     const db = await connectDb()
 
     switch (request.method) {
         case "POST":
             const data = await request.json()
 
-            console.log("subscriptions: ", data.subs.subscribers)
             // TODO: make an inital fetch to get the subscribers
             data.subs.subscribers.forEach(async (sub) => {
                 const subscription = await db.models.user
