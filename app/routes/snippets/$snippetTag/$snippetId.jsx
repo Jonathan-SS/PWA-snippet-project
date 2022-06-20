@@ -78,7 +78,7 @@ export default function SnippetPage() {
         setCopyState(true)
         async function checkSub() {
             const registration = await navigator.serviceWorker.getRegistration()
-            let subscription = await registration.pushManager.getSubscription()
+            let subscription = await registration?.pushManager.getSubscription()
             const mappedEndpoints = user?.subscription.map(
                 (sub) => sub.endpoint
             )
