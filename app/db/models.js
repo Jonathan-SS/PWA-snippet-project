@@ -54,12 +54,17 @@ const userSchema = new Schema({
         required: [true, "Gotta have a password"],
     },
     subscription: {
-        endpoint: String,
-        expirationTime: String,
-        keys: {
-            p256dh: String,
-            auth: String,
-        },
+        type: Array,
+        default: [
+            {
+                endpoint: String,
+                expirationTime: String,
+                keys: {
+                    p256dh: String,
+                    auth: String,
+                },
+            },
+        ],
     },
 })
 

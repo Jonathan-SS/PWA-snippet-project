@@ -15,7 +15,9 @@ export const action: ActionFunction = async ({ request }) => {
                 // TODO: add subscriptions to array list
                 await db.models.user.updateOne(
                     { _id: data.userId },
-                    { subscription: data.subscription }
+                    {
+                        $addToSet: { subscription: data.subscription },
+                    }
                 )
 
                 await db.models.Snippet.updateOne(

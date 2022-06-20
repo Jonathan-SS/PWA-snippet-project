@@ -1,5 +1,6 @@
 import { CopyIcon, StarIcon } from "~/components/Icons"
 import connectDb from "~/db/connectDb.server"
+import { useAccount } from "~/hooks/useAccount"
 import { useEffect, useState } from "react"
 import Highlight from "react-highlight"
 import { Link } from "react-router-dom"
@@ -13,6 +14,7 @@ export async function loader({ params, request }) {
 
     const db = await connectDb()
     const snippet = await db.models.Snippet.findById(params.snippetId)
+    const user = await db.models.user.findById(userId)
     if (!snippet) {
         throw new Response(
             `Couldn't find snippet with id: ${params.snippetId}`,
@@ -21,7 +23,7 @@ export async function loader({ params, request }) {
             }
         )
     }
-    return json({ snippet: snippet, userId: userId })
+    return json({ snippet: snippet, userId: userId, user: user ? user : null })
 }
 
 export async function action({ request }) {
@@ -59,8 +61,8 @@ export async function action({ request }) {
     }
 }
 
-export default function BookPage() {
-    const { snippet, userId } = useLoaderData()
+export default function SnippetPage() {
+    const { snippet, userId, user } = useLoaderData()
     const [subs, setSub] = useState(false)
     const dateAdded = new Date(snippet.dateAdded)
     const displayDate = dateAdded.toLocaleDateString("da-DK", {
@@ -68,10 +70,28 @@ export default function BookPage() {
     })
     const [copyState, setCopyState] = useState(false)
     const languageTag = useParams().snippetTag
+    const loggedIn = useAccount()
+    console.log("loggedIn: ", loggedIn)
+    console.log("user: ", user?.subscription)
 
     useEffect(() => {
         setCopyState(true)
-        setSub(snippet.subscribers?.includes(userId))
+        async function checkSub() {
+            const registration = await navigator.serviceWorker.getRegistration()
+            let subscription = await registration.pushManager.getSubscription()
+
+            const mappedEndpoints = user?.subscription.map(
+                (sub) => sub.endpoint
+            )
+
+            if (
+                snippet.subscribers.includes(userId) &&
+                mappedEndpoints.includes(subscription?.endpoint)
+            ) {
+                setSub(true)
+            }
+        }
+        checkSub()
     }, [snippet.subscribers])
 
     async function unSubToSnip() {
@@ -187,20 +207,24 @@ export default function BookPage() {
                     </Form>
                 ) : null}
 
-                {subs ? (
-                    <button
-                        className=" text-white ml-4 flex items-center h-fit bg-blue-800 hover:bg-blue-600 dark:bg-gray-800 dark:hover:bg-gray-700 rounded-lg px-2 py-1"
-                        onClick={unSubToSnip}
-                    >
-                        Unsubscribe to snippet
-                    </button>
-                ) : (
-                    <button
-                        className="text-white ml-4 flex items-center h-fit bg-blue-800 hover:bg-blue-600 dark:bg-gray-800 dark:hover:bg-gray-700 rounded-lg px-2 py-1"
-                        onClick={subToSnip}
-                    >
-                        Subscribe to snippet
-                    </button>
+                {loggedIn && (
+                    <>
+                        {subs ? (
+                            <button
+                                className=" text-white ml-4 flex items-center h-fit bg-blue-800 hover:bg-blue-600 dark:bg-gray-800 dark:hover:bg-gray-700 rounded-lg px-2 py-1"
+                                onClick={unSubToSnip}
+                            >
+                                Unsubscribe to snippet
+                            </button>
+                        ) : (
+                            <button
+                                className="text-white ml-4 flex items-center h-fit bg-blue-800 hover:bg-blue-600 dark:bg-gray-800 dark:hover:bg-gray-700 rounded-lg px-2 py-1"
+                                onClick={subToSnip}
+                            >
+                                Subscribe to snippet
+                            </button>
+                        )}
+                    </>
                 )}
             </div>
 

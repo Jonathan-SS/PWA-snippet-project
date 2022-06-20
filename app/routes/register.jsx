@@ -1,7 +1,6 @@
 import connectDb from "~/db/connectDb.server"
 import bcrypt from "bcryptjs"
 import { Form, json, redirect } from "remix"
-
 import { commitUserSession, getUserSession } from "../sessions.server.js"
 
 export async function action({ request }) {

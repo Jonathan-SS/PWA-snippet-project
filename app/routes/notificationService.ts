@@ -24,14 +24,25 @@ export const action: ActionFunction = async ({ request }) => {
     switch (request.method) {
         case "POST":
             const data = await request.json()
+            console.log("data: ", data)
+
+            const subscribersEndpoint = await db.models.user.find(
+                {
+                    _id: data.subs.subscribers,
+                },
+                { subscription: 1, _id: 0 }
+            )
+            const mappedSubscribersEndpoints = subscribersEndpoint.reduce(
+                (acc, item) => [...acc, ...item.subscription],
+                []
+            )
+            console.log("subscribersEndpoint: ", mappedSubscribersEndpoints)
 
             // TODO: make an inital fetch to get the subscribers
-            data.subs.subscribers.forEach(async (sub) => {
-                const subscription = await db.models.user
-                    .findOne({ _id: sub })
-                    .select({ subscription: 1, _id: 0 })
+            mappedSubscribersEndpoints.forEach((subscribeObject) => {
+                console.log("subscription: ", subscribeObject)
 
-                sendNotification(subscription.subscription, data.push)
+                sendNotification(subscribeObject, data.push)
             })
 
             return json({
