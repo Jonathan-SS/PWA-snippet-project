@@ -1,4 +1,4 @@
-import { Link, NavLink } from "@remix-run/react"
+import { NavLink } from "@remix-run/react"
 import { useEffect, useState } from "react"
 
 import { useAccount } from "../hooks/useAccount"
@@ -47,29 +47,38 @@ export default function SideBar({ languages }) {
                 <ul className="flex align-center overflow-x-scroll w-full scrollbar-hide gap-3 lg:block lg:space-y-2 ">
                     {isOnLine && loggedIn && (
                         <li>
-                            <Link
+                            <NavLink
                                 to="/snippets/createSnippet"
                                 className={accentLinkStyles}
                             >
                                 Create snippet
-                            </Link>
+                            </NavLink>
                         </li>
                     )}
 
                     {loggedIn && (
                         <li>
-                            <Link
+                            <NavLink
                                 to="/snippets/mysnippets"
-                                className={accentLinkStyles}
+                                className={({ isActive }) =>
+                                    accentLinkStyles +
+                                    (isActive ? " dark:bg-gray-600 pr-4" : "")
+                                }
                             >
                                 My snippets
-                            </Link>
+                            </NavLink>
                         </li>
                     )}
                     <li>
-                        <Link to="/snippets/all" className={linkStyles}>
+                        <NavLink
+                            to="/snippets/all"
+                            className={({ isActive }) =>
+                                linkStyles +
+                                (isActive ? " dark:bg-gray-600 pr-4" : "")
+                            }
+                        >
                             All snippets
-                        </Link>
+                        </NavLink>
                     </li>
                     {languages.map((language) => {
                         return (

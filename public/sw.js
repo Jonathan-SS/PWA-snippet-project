@@ -2,22 +2,25 @@ const serviceWorkerVersion = "v1.0.2"
 const staticCache = `static-cache-${serviceWorkerVersion}`
 const imageCache = `image-cache-${serviceWorkerVersion}`
 
+const manifest = self.__remixManifest
+console.log(manifest)
+
 self.addEventListener("install", (e) => {
     //    TODO: Cache pages on install, e.g error pages, etc.
     // TODO: cache static images on install
 })
 
 self.addEventListener("activate", async () => {
-    // This will be called only once when the service worker is activated.
+    // This will be called only once when the service worker is activate
     // TODO: Remove all OLD caches that are not named in CACHE_NAME
-    // If cache is older then 30 days, remove it
+    // If cache is older then 30 days, remove i
 })
 
 // Network first look for cache
 // Give images from cache if available
 // Else fetch from network and cache
 
-// self.addEventListener("fetch", async (fetchEvent) => {
+// self.addEventListener("fetch", async (fetchEvent) =>{
 //     // Return all request that is not assets for rendering the snippet application.
 //     //  eg. POST, PUT, DELETE, PATCH, HEAD, OPTIONS, TRACE
 //     // Like creating new snippets, or updating existing snippets
@@ -69,6 +72,8 @@ self.addEventListener("fetch", async function (event) {
         console.log("caching")
     }
 })
+
+async function networkFirstFallbackToCache(request) {}
 
 // The notificationclick event - https://developers.google.com/web/ilt/pwa/introduction-to-push-notifications
 self.addEventListener("notificationclick", (e) => {

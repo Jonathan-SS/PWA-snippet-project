@@ -7,8 +7,8 @@ import { commitUserSession, getUserSession } from "../sessions.server.js"
 // export async function loader({ request }) {
 //     const userSession = await getUserSession(request.headers.get("Cookie"))
 //     return json({
-//         loggedIn: userSession.get("loggedIn"),
-//     })
+//         loggedIn: userSession.get("loggedIn")
+//     }
 // }
 
 export async function action({ request }) {
