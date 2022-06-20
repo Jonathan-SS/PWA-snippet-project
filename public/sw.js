@@ -1,6 +1,7 @@
 const window = {}
 const manifestVersion = new URL(location).searchParams.get("mv")
-self.importScripts(`/build/assets-${manifestVersion}.js`)
+console.log(`Manifest version: ${manifestVersion}`)
+self.importScripts(`/build/manifest-${manifestVersion.toUpperCase()}.js`)
 const manifest = window.__remixManifest
 
 const START_URL = "/"
@@ -10,9 +11,6 @@ const DYNAMIC_CACHE = "dynamic-cache"
 
 // INSTALL -----------------------------------------------------------
 self.addEventListener("install", (event) => {
-    STATIC_CACHE = `assets-${manifestVersion}.js`
-
-    manifest = manifestVersion
     console.log(`Installing ${manifestVersion}`)
     console.log(`SW installed, manifest version ${manifest.version}`)
     const manifestUrls = parseUrlsFromManifest(manifest)
