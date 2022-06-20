@@ -1,5 +1,5 @@
 const window = {}
-self.importScripts("/build/manifest-D3924B57.js")
+self.importScripts("/build/manifest-CA340A62")
 
 const manifest = window.__remixManifest
 
@@ -57,7 +57,7 @@ self.addEventListener("fetch", (event) => {
     // HTML ------------------------------------------------------------
     if (isHtmlRequest(event.request)) {
         event.respondWith((() => {
-             const cachedResponse = await networkFallbackToCache(event)
+             const cachedResponse =  networkFallbackToCache(event)
                 if (cachedResponse) {
                     return cachedResponse
                 }

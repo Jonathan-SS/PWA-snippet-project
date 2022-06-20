@@ -1,6 +1,7 @@
 import { CopyIcon, StarIcon } from "~/components/Icons"
 import connectDb from "~/db/connectDb.server"
 import { useAccount } from "~/hooks/useAccount"
+import { useNotification } from "~/hooks/useNotifcation"
 import { useEffect, useState } from "react"
 import Highlight from "react-highlight"
 import { Link } from "react-router-dom"
@@ -71,6 +72,7 @@ export default function SnippetPage() {
     const [copyState, setCopyState] = useState(false)
     const languageTag = useParams().snippetTag
     const loggedIn = useAccount()
+    const useNotification = useNotification()
     console.log("loggedIn: ", loggedIn)
     console.log("user: ", user?.subscription)
 
@@ -79,7 +81,6 @@ export default function SnippetPage() {
         async function checkSub() {
             const registration = await navigator.serviceWorker.getRegistration()
             let subscription = await registration.pushManager.getSubscription()
-
             const mappedEndpoints = user?.subscription.map(
                 (sub) => sub.endpoint
             )
@@ -207,7 +208,7 @@ export default function SnippetPage() {
                     </Form>
                 ) : null}
 
-                {loggedIn && (
+                {loggedIn && useNotification && (
                     <>
                         {subs ? (
                             <button

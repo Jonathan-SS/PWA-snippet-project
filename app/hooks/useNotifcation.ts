@@ -1,95 +1,17 @@
 import { useEffect, useState } from "react"
 
-function displayNotification() {
-    if (Notification.permission == "granted") {
-        console.log("Display message")
-        navigator.serviceWorker.getRegistration().then(function (reg) {
-            reg.showNotification("Hello world!", {
-                body: "Here is a notification body!",
-                icon: "http://lasseaakjaer.com/food-reduction-app-information-architecture.jpg",
-                vibrate: [100, 50, 100],
-                data: {
-                    dateOfArrival: Date.now(),
-                    primaryKey: 1,
-                },
-                actions: [
-                    {
-                        action: "explore",
-                        title: "Explore this new world",
-                        icon: "images/checkmark.png",
-                    },
-                    {
-                        action: "close",
-                        title: "Close notification",
-                        icon: "images/xmark.png",
-                    },
-                ],
-            })
-        })
-    }
-}
-
-async function useNotifcation() {
-    const [notification, setNotification] = useState(null)
-    const [notificationType, setNotificationType] = useState(null)
+export function useNotification(): boolean {
+    const [notiDenied, setNotiDenied] = useState<boolean>(false)
 
     useEffect(() => {
-        Notification.requestPermission(function (status) {
-            console.log("Notification permission status:", status)
-        })
-    }, [])
+        ;async () => {
+            if (Notification.permission !== "denied") {
+                setNotiDenied(true)
+            } else {
+                setNotiDenied(false)
+            }
+        }
+    }, [notiDenied])
 
-    const saveSubscription = async (subscription) => {
-        const SERVER_URL = `${location.origin}/subscriptionService`
-        return fetch(SERVER_URL, {
-            method: "post",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(subscription),
-        })
-    }
-
-    // Subcribe to push service from client
-    const registration = await navigator.serviceWorker.getRegistration()
-    const pushSubcribtion = await registration.pushManager.subscribe({
-        userVisibleOnly: true,
-        applicationServerKey:
-            "BEApaM42xO4ckE_i6WH0SPyfAXWPtZJncv4d_foykgnhTGMaLsbmXOWdldaj7YTy4NJIzPdq4jO6Jl2lME_fg_E",
-    })
-    // pushSubscription.toJSON() // send to server
-    // Sendt the messega to the server, with encripted with a public key
-
-    // Subscribing to Push Notifications - https://developers.google.com/web/ilt/pwa/introduction-to-push-notifications#subscribing_to_push_notifications
-    if ("serviceWorker" in navigator) {
-        navigator.serviceWorker
-            .register("sw.js")
-            .then(function (reg) {
-                console.log("Service Worker Registered!", reg)
-
-                reg.pushManager.getSubscription().then(function (sub) {
-                    if (sub === null) {
-                        // Update UI to ask user to register for Push
-                        console.log("Not subscribed to push service!")
-                    } else {
-                        // We have a subscription, update the database
-                        console.log("Subscription object: ", sub)
-                    }
-                })
-            })
-            .catch(function (err) {
-                console.log("Service Worker registration failed: ", err)
-            })
-    }
-
-    return {
-        saveSubscription,
-    }
+    return notiDenied
 }
-// https://developers.google.com/web/ilt/pwa/introduction-to-push-notifications
-// https://blog.atulr.com/web-notifications/
-
-// Ask for permission of displaying a notfication, when favorting a snippet
-// Subcribe to updates of the snippet
-// Display a notification when the snippet is updated
-// Sendt a notfication when a snippet is updated
