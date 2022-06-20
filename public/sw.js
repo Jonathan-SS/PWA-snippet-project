@@ -13,7 +13,7 @@ self.addEventListener("install", (event) => {
     manifest = manifestVersion
 
     console.log(`Installing ${manifestVersion}`)
-    console.log(`SW installed, manifest version ${manifest.version}`)
+    console.log(`SW installed, manifest version ${manifest}`)
     const manifestUrls = parseUrlsFromManifest(manifest)
 
     event.waitUntil(
@@ -26,7 +26,7 @@ self.addEventListener("install", (event) => {
                 )
             } catch (error) {
                 console.log(
-                    `FAILED to cache ${manifestUrls.length} asset URLs from manifest version ${manifest.version}:`,
+                    `FAILED to cache ${manifestUrls.length} asset URLs from manifest version ${manifest}:`,
                     error
                 )
             }
@@ -36,7 +36,7 @@ self.addEventListener("install", (event) => {
 
 // ACTIVATE ----------------------------------------------------------
 self.addEventListener("activate", (event) => {
-    console.log(`SW activated, manifest version ${manifest.version}`)
+    console.log(`SW activated, manifest version ${manifest}`)
     event.waitUntil(
         (async () => {
             const cacheNames = await caches.keys()
