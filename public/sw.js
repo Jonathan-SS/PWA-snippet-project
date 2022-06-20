@@ -1,7 +1,6 @@
 const window = {}
 
-self.importScripts("/build/manifest-5A841AC6.js")
-const manifest = window.__remixManifest
+let manifest = ""
 const START_URL = "/"
 
 let STATIC_CACHE = ""
@@ -11,6 +10,8 @@ const DYNAMIC_CACHE = "dynamic-cache"
 self.addEventListener("install", (event) => {
     const manifestVersion = new URL(location).searchParams.get("mv")
     STATIC_CACHE = `assets-${manifestVersion}.js`
+    manifest = manifestVersion
+
     console.log(`Installing ${manifestVersion}`)
     console.log(`SW installed, manifest version ${manifest.version}`)
     const manifestUrls = parseUrlsFromManifest(manifest)
@@ -21,7 +22,7 @@ self.addEventListener("install", (event) => {
             try {
                 openCache.addAll([START_URL, ...manifestUrls])
                 console.log(
-                    `${manifestUrls.length} asset URLs from manifest version ${manifest.version} cached`
+                    `${manifestUrls.length} asset URLs from manifest version ${manifest} cached`
                 )
             } catch (error) {
                 console.log(
