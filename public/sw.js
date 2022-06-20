@@ -1,19 +1,20 @@
 const window = {}
+const manifestVersion = new URL(location).searchParams.get("mv")
+self.importScripts(`/build/assets-${manifestVersion}.js`)
+const manifest = window.__remixManifest
 
-let manifest = ""
 const START_URL = "/"
 
-let STATIC_CACHE = ""
+let STATIC_CACHE = `static-${manifest.version}`
 const DYNAMIC_CACHE = "dynamic-cache"
 
 // INSTALL -----------------------------------------------------------
 self.addEventListener("install", (event) => {
-    const manifestVersion = new URL(location).searchParams.get("mv")
     STATIC_CACHE = `assets-${manifestVersion}.js`
-    manifest = manifestVersion
 
+    manifest = manifestVersion
     console.log(`Installing ${manifestVersion}`)
-    console.log(`SW installed, manifest version ${manifest}`)
+    console.log(`SW installed, manifest version ${manifest.version}`)
     const manifestUrls = parseUrlsFromManifest(manifest)
 
     event.waitUntil(
@@ -22,11 +23,11 @@ self.addEventListener("install", (event) => {
             try {
                 openCache.addAll([START_URL, ...manifestUrls])
                 console.log(
-                    `${manifestUrls.length} asset URLs from manifest version ${manifest} cached`
+                    `${manifestUrls.length} asset URLs from manifest version ${manifest.version} cached`
                 )
             } catch (error) {
                 console.log(
-                    `FAILED to cache ${manifestUrls.length} asset URLs from manifest version ${manifest}:`,
+                    `FAILED to cache ${manifestUrls.length} asset URLs from manifest version ${manifest.version}:`,
                     error
                 )
             }
@@ -36,7 +37,7 @@ self.addEventListener("install", (event) => {
 
 // ACTIVATE ----------------------------------------------------------
 self.addEventListener("activate", (event) => {
-    console.log(`SW activated, manifest version ${manifest}`)
+    console.log(`SW activated, manifest version ${manifest.version}`)
     event.waitUntil(
         (async () => {
             const cacheNames = await caches.keys()
