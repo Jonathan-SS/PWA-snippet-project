@@ -72,7 +72,8 @@ export default function SnippetPage() {
     const [copyState, setCopyState] = useState(false)
     const languageTag = useParams().snippetTag
     const loggedIn = useAccount()
-    const useNotification = useNotification()
+    const notiDenied = useNotification()
+    console.log("useNotification: ", useNotification)
     console.log("loggedIn: ", loggedIn)
     console.log("user: ", user?.subscription)
 
@@ -131,7 +132,6 @@ export default function SnippetPage() {
                 subscription = await registration.pushManager.subscribe(options)
             }
 
-            // TODO: check denied subscribtion
             fetch(SERVER_URL, {
                 method: "post",
                 headers: {
@@ -208,7 +208,7 @@ export default function SnippetPage() {
                     </Form>
                 ) : null}
 
-                {loggedIn && useNotification && (
+                {loggedIn && notiDenied && (
                     <>
                         {subs ? (
                             <button

@@ -1,5 +1,5 @@
 const window = {}
-self.importScripts("/build/manifest-CA340A62")
+self.importScripts("/build/manifest-C40B5D07.js")
 
 const manifest = window.__remixManifest
 
@@ -56,8 +56,9 @@ self.addEventListener("fetch", (event) => {
 
     // HTML ------------------------------------------------------------
     if (isHtmlRequest(event.request)) {
-        event.respondWith((() => {
-             const cachedResponse =  networkFallbackToCache(event)
+        event.respondWith(
+            (() => {
+                const cachedResponse = networkFallbackToCache(event)
                 if (cachedResponse) {
                     return cachedResponse
                 }
@@ -70,8 +71,9 @@ self.addEventListener("fetch", (event) => {
                         Location: START_URL,
                     },
                 })
-            })())
-        }
+            })()
+        )
+    }
 
     // Build assets ----------------------------------------------------
     if (
@@ -92,22 +94,21 @@ self.addEventListener("fetch", (event) => {
     // Loader requests -------------------------------------------------
     if (isLoaderRequest(event.request)) {
         event.respondWith(
-            (() => {
+            (async () => {
                 const cachedResponse = await networkFallbackToCache(event)
-                 if (cachedResponse) {
-                        return cachedResponse
-                 }
+                if (cachedResponse) {
+                    return cachedResponse
+                }
                 console.log(
-                        `Cache miss for ${event.request.url}, throwing offline response`
-                    )
-                    return new Response("You appear to be offline", {
-                        status: 503,
-                        statusText: "Network unavailable",
-                        headers: {
-                            "X-Remix-Catch": "yes",
-                        },
-                    })
-
+                    `Cache miss for ${event.request.url}, throwing offline response`
+                )
+                return new Response("You appear to be offline", {
+                    status: 503,
+                    statusText: "Network unavailable",
+                    headers: {
+                        "X-Remix-Catch": "yes",
+                    },
+                })
             })()
         )
     }
@@ -132,12 +133,11 @@ async function cacheFallbackToNetwork(event) {
     const request = event.request
     const cachedResponse = await caches.match(request)
     if (cachedResponse) {
-         console.log(`Cache hit for ${request.url}`)
+        console.log(`Cache hit for ${request.url}`)
         return cachedResponse
     }
     console.log(`Cache miss for ${request.url}, fetching from network`)
     return fetch(request)
-
 }
 
 async function networkThenCacheFallbackToCache(event, cacheName) {
@@ -145,21 +145,20 @@ async function networkThenCacheFallbackToCache(event, cacheName) {
     const url = request.url
     const networkResponse = await fetch(request)
     try {
-         if (networkResponse.ok) {
-        console.log(`Network hit for ${url}, caching in ${cacheName}`)
-        const clonedResponse = networkResponse.clone()
-        event.waitUntil(
-            (() => {
-                const openCache = caches.open(cacheName)
-                cache.put(openCache, clonedResponse)
-                
-            })())
-        return networkResponse
-    }
+        if (networkResponse.ok) {
+            console.log(`Network hit for ${url}, caching in ${cacheName}`)
+            const clonedResponse = networkResponse.clone()
+            event.waitUntil(
+                (() => {
+                    const openCache = caches.open(cacheName)
+                    cache.put(openCache, clonedResponse)
+                })()
+            )
+            return networkResponse
+        }
     } catch (error) {
         console.log(`Network fail for ${url}:`, error)
-            return caches.match(request)
-        
+        return caches.match(request)
     }
 }
 
@@ -175,25 +174,25 @@ async function networkFallbackToCache(event) {
 async function cacheFallbackToNetworkThenCache(event, cacheName) {
     const request = event.request
     const url = request.url
-        const cachedResponse = await caches.match(request)
-        if (cachedResponse) {
-            console.log(`Cache hit for ${url}`)
-            return cachedResponse
-        }
+    const cachedResponse = await caches.match(request)
+    if (cachedResponse) {
+        console.log(`Cache hit for ${url}`)
+        return cachedResponse
+    }
 
-        console.log(`Cache miss for ${url}`)
-        const networkResponse = await fetch(request)
-        if (networkResponse.ok) {
-            console.log(`Caching ok response for ${url}`)
-            const clonedResponse = networkResponse.clone()
-            event.waitUntil(
-                (() => {
-                    const openedCache = await caches.open(cacheName)
-                    await openedCache.put(request, clonedResponse)
-                })()
-            )
-        }
-        return networkResponse
+    console.log(`Cache miss for ${url}`)
+    const networkResponse = await fetch(request)
+    if (networkResponse.ok) {
+        console.log(`Caching ok response for ${url}`)
+        const clonedResponse = networkResponse.clone()
+        event.waitUntil(
+            (async () => {
+                const openedCache = await caches.open(cacheName)
+                await openedCache.put(request, clonedResponse)
+            })()
+        )
+    }
+    return networkResponse
 }
 
 // Parse URLs from imported manifest ---------------------------------

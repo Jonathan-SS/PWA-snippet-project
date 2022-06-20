@@ -4,13 +4,13 @@ export function useNotification(): boolean {
     const [notiDenied, setNotiDenied] = useState<boolean>(false)
 
     useEffect(() => {
-        ;async () => {
+        ;(async () => {
             if (Notification.permission !== "denied") {
                 setNotiDenied(true)
             } else {
                 setNotiDenied(false)
             }
-        }
+        })()
     }, [notiDenied])
 
     return notiDenied
