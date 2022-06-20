@@ -73,9 +73,6 @@ export default function SnippetPage() {
     const languageTag = useParams().snippetTag
     const loggedIn = useAccount()
     const notiDenied = useNotification()
-    console.log("useNotification: ", useNotification)
-    console.log("loggedIn: ", loggedIn)
-    console.log("user: ", user?.subscription)
 
     useEffect(() => {
         setCopyState(true)

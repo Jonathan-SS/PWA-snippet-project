@@ -1,6 +1,7 @@
 import connectDb from "~/db/connectDb.server"
 import bcrypt from "bcryptjs"
 import { Form, json, redirect } from "remix"
+
 import { commitUserSession, getUserSession } from "../sessions.server.js"
 
 export async function action({ request }) {
@@ -13,7 +14,6 @@ export async function action({ request }) {
             username,
             password,
         })
-        console.log(user)
         const session = await getUserSession(request.headers.get("Cookie"))
         session.set("userId", user.id)
 

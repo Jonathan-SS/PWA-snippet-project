@@ -7,7 +7,6 @@ export const action: ActionFunction = async ({ request }) => {
     switch (request.method) {
         case "POST":
             const data = await request.json()
-            console.log(data)
 
             const user = await db.models.user.findById(data.userId)
 

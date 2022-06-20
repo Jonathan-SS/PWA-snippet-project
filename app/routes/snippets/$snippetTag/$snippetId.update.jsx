@@ -83,8 +83,6 @@ export async function action({ request }) {
             }),
         })
 
-        console.log(testFetch)
-
         return redirect(`/snippets/mysnippets/${snippetId}`)
     } catch (error) {
         return json(

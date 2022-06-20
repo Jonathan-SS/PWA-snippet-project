@@ -7,18 +7,12 @@ export const action: ActionFunction = async ({ request }) => {
     switch (request.method) {
         case "POST":
             const data = await request.json()
-            console.log("herunder2")
-
-            console.log(data.snippetId)
-
             const test = await db.models.Snippet.updateOne(
                 { _id: data.snippetId },
                 {
                     $pull: { subscribers: data.userId },
                 }
             )
-            console.log(test)
-
             return new Response(data.userId, {
                 headers: {
                     "Content-Type": "application/json",

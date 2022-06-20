@@ -1,11 +1,10 @@
 const window = {}
-self.importScripts("/build/manifest-C40B5D07.js")
-
 const manifest = window.__remixManifest
+self.importScripts("/build/manifest-e6dedf47.js")
 
 const START_URL = "/"
 
-const STATIC_CACHE = `assets-${manifest.version}`
+const STATIC_CACHE = `assets-${manifest}`
 const DYNAMIC_CACHE = "dynamic-cache"
 
 // INSTALL -----------------------------------------------------------

@@ -24,7 +24,6 @@ export const action: ActionFunction = async ({ request }) => {
     switch (request.method) {
         case "POST":
             const data = await request.json()
-            console.log("data: ", data)
 
             const subscribersEndpoint = await db.models.user.find(
                 {
@@ -36,12 +35,8 @@ export const action: ActionFunction = async ({ request }) => {
                 (acc, item) => [...acc, ...item.subscription],
                 []
             )
-            console.log("subscribersEndpoint: ", mappedSubscribersEndpoints)
 
-            // TODO: make an inital fetch to get the subscribers
             mappedSubscribersEndpoints.forEach((subscribeObject) => {
-                console.log("subscription: ", subscribeObject)
-
                 sendNotification(subscribeObject, data.push)
             })
 
