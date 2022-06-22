@@ -210,3 +210,27 @@ function parseUrlsFromManifest(manifest) {
     })
     return [...modules, ...chunks, manifest.url]
 }
+
+// Handling the push event in the service worker - https://developers.google.com/web/ilt/pwa/introduction-to-push-notifications
+self.addEventListener("push", function (e) {
+    const pushMessage = JSON.parse(e.data.text())
+
+    var options = {
+        body: pushMessage.body,
+        icon: "snippie-logo.png",
+        vibrate: [100, 50, 100],
+        data: {
+            dateOfArrival: Date.now(),
+            href: pushMessage.href,
+        },
+        actions: [
+            {
+                action: "explore",
+                title: "Explore the changes",
+                icon: "snippie-logo.png",
+            },
+            { action: "close", title: "Close", icon: "snippie-logo.png" },
+        ],
+    }
+    e.waitUntil(self.registration.showNotification(pushMessage.title, options))
+})
