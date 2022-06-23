@@ -41,7 +41,7 @@ export async function action({ request }) {
                 await db.models.user.updateOne(
                     { _id: userId },
                     {
-                        $pull: { favoriteSnippets: snippetId.id },
+                        $pull: { favoriteSnippets: snippet.id },
                     }
                 )
 

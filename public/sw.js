@@ -149,8 +149,8 @@ async function cacheFallbackToNetwork(event) {
 async function networkThenCacheFallbackToCache(event, cacheName) {
     const request = event.request
     const url = request.url
-    const networkResponse = await fetch(request)
     try {
+        const networkResponse = await fetch(request)
         if (networkResponse.ok) {
             console.log(`Network hit for ${url}, caching in ${cacheName}`)
             const clonedResponse = networkResponse.clone()
