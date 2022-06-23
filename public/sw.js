@@ -97,7 +97,7 @@ self.addEventListener("fetch", (event) => {
     if (isLoaderRequest(event.request)) {
         event.respondWith(
             (async () => {
-                const cachedResponse = await networkFallbackToCache(
+                const cachedResponse = await networkThenCacheFallbackToCache(
                     event,
                     DYNAMIC_CACHE
                 )
