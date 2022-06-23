@@ -62,7 +62,7 @@ export const links = () => [
     },
     {
         rel: "msapplication-TileColor",
-        content: "#742914",
+        content: "#374151",
     },
     {
         rel: "theme-color",
@@ -75,7 +75,9 @@ export function meta() {
         charset: "utf-8",
         title: "Remix snippets app",
         viewport: "width=device-width,initial-scale=1",
-        "theme-color": "#742914",
+        "theme-color": "#374151",
+        description:
+            "This is the greatest snippet saver PWA ever, features like push notification, offline caching, copy to clipboard and syntax highlighting",
     }
 }
 
