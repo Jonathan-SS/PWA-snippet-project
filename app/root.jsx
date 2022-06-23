@@ -75,6 +75,7 @@ export function meta() {
         charset: "utf-8",
         title: "Remix snippets app",
         viewport: "width=device-width,initial-scale=1",
+        "theme-color": "#742914",
     }
 }
 
