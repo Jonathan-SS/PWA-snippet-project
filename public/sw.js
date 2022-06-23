@@ -90,7 +90,7 @@ self.addEventListener("fetch", (event) => {
         isBuildRequest(event.request) &&
         event.request.destination === "style"
     ) {
-        event.respondWith(cacheFallbackToNetworkThenCache(event, DYNAMIC_CACHE))
+        event.respondWith(cacheFallbackToNetworkThenCache(event, STATIC_CACHE))
     }
 
     // Loader requests -------------------------------------------------
