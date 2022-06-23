@@ -23,7 +23,7 @@ export async function action({ request }) {
 
         if (!user) {
             return json(
-                { errors: { username: "User not found" } },
+                { errors: { username: { message: "User not found" } } },
                 { status: 400 }
             )
         }
@@ -32,7 +32,7 @@ export async function action({ request }) {
         const isCorrectPassword = await bcrypt.compare(password, user.password)
         if (!isCorrectPassword) {
             return json(
-                { errors: { password: "Wrong password" } },
+                { errors: { password: { message: "Wrong password" } } },
                 { status: 400 }
             )
         }
