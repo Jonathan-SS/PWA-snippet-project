@@ -103,7 +103,6 @@ export async function loader({ params, request }) {
 
 export default function Index() {
     const loaderData = useLoaderData() || {}
-    console.log(loaderData.snippets)
     const submit = useSubmit()
     const languageTag = useParams().snippetTag
 
