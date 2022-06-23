@@ -32,30 +32,30 @@ export async function action({ request }) {
     const _action = form.get("_action")
     const snippetId = form.get("snippetId")
     const db = await connectDb()
+    const { snippet, userId, user } = useLoaderData()
 
     switch (_action) {
         case "favoriteToggle":
-            const isFavortie = form.get("isFavorite")
-            if (isFavortie === "true") {
-                await db.models.Snippet.updateOne(
-                    { _id: snippetId },
+            const mappedFavorites = user?.favoriteSnippets.map((fav) => fav)
+            if (mappedFavorites.includes(snippet.id)) {
+                await db.models.user.updateOne(
+                    { _id: userId },
                     {
-                        $set: { favorite: false },
+                        $pull: { favoriteSnippets: snippetId.id },
                     }
                 )
 
                 return null
-            }
-            if (isFavortie === "false") {
-                await db.models.Snippet.updateOne(
-                    { _id: snippetId },
+            } else {
+                await db.models.user.updateOne(
+                    { _id: userId },
                     {
-                        $set: { favorite: true },
+                        $addToSet: { favoriteSnippets: snippet.id },
                     }
                 )
-
                 return null
             }
+
         case "delete":
             await db.models.Snippet.deleteOne({ _id: snippetId })
             return redirect("/snippets/snippet")

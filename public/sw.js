@@ -42,7 +42,7 @@ self.addEventListener("activate", (event) => {
             const cachesToDelete = cacheNames.filter(
                 (cacheName) =>
                     cacheName !== STATIC_CACHE &&
-                    cacheName.startsWith("assets-")
+                    cacheName.startsWith("static-")
             )
             return Promise.all(
                 cachesToDelete.map((cacheName) => caches.delete(cacheName))
@@ -157,6 +157,7 @@ async function networkThenCacheFallbackToCache(event, cacheName) {
             event.waitUntil(
                 (async () => {
                     const openCache = await caches.open(cacheName)
+                    console.log(cacheName)
                     openCache.put(request, clonedResponse)
                 })()
             )
