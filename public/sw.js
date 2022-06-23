@@ -1,35 +1,35 @@
-// Declare a window object before importing the manifest file, which sets window.__remixManifest
 const window = {}
-// TODO: This import needs to be manually updated on each build — can it be automated?
-self.importScripts("/build/manifest-8D375851.js")
-
+const manifestVersion = new URL(location).searchParams.get("mv")
+console.log(`Manifest version: ${manifestVersion}`)
+self.importScripts(`/build/manifest-${manifestVersion.toUpperCase()}.js`)
 const manifest = window.__remixManifest
 
-const START_URL = "/snippets"
+const START_URL = "/"
 
-const MANIFEST_CACHE = `assets-${manifest.version}`
+let STATIC_CACHE = `static-${manifest.version}`
 const DYNAMIC_CACHE = "dynamic-cache"
 
 // INSTALL -----------------------------------------------------------
 self.addEventListener("install", (event) => {
+    console.log(`Installing ${manifestVersion}`)
     console.log(`SW installed, manifest version ${manifest.version}`)
     const manifestUrls = parseUrlsFromManifest(manifest)
+
     event.waitUntil(
-        caches.open(MANIFEST_CACHE).then((cache) => {
-            cache
-                .addAll([START_URL, ...manifestUrls])
-                .then(() => {
-                    console.log(
-                        `${manifestUrls.length} asset URLs from manifest version ${manifest.version} cached`
-                    )
-                })
-                .catch((error) => {
-                    console.log(
-                        `FAILED to cache ${manifestUrls.length} asset URLs from manifest version ${manifest.version}:`,
-                        error
-                    )
-                })
-        })
+        (async () => {
+            const openCache = await caches.open(STATIC_CACHE)
+            try {
+                openCache.addAll([START_URL, ...manifestUrls])
+                console.log(
+                    `${manifestUrls.length} asset URLs from manifest version ${manifest.version} cached`
+                )
+            } catch (error) {
+                console.log(
+                    `FAILED to cache ${manifestUrls.length} asset URLs from manifest version ${manifest.version}:`,
+                    error
+                )
+            }
+        })()
     )
 })
 
@@ -37,34 +37,30 @@ self.addEventListener("install", (event) => {
 self.addEventListener("activate", (event) => {
     console.log(`SW activated, manifest version ${manifest.version}`)
     event.waitUntil(
-        caches.keys().then((cacheNames) => {
-            return Promise.all(
-                cacheNames
-                    .filter(
-                        (cacheName) =>
-                            cacheName.startsWith("assets-") &&
-                            cacheName !== MANIFEST_CACHE
-                    )
-                    .map((cacheName) => {
-                        console.log(`Deleting cache: ${cacheName}`)
-                        return caches.delete(cacheName)
-                    })
+        (async () => {
+            const cacheNames = await caches.keys()
+            const cachesToDelete = cacheNames.filter(
+                (cacheName) =>
+                    cacheName !== STATIC_CACHE &&
+                    cacheName.startsWith("assets-")
             )
-        })
+            return Promise.all(
+                cachesToDelete.map((cacheName) => caches.delete(cacheName))
+            )
+        })()
     )
 })
 
 // FETCH -------------------------------------------------------------
 self.addEventListener("fetch", (event) => {
     // We only want to handle GET requests
-    if (event.request.method !== "GET") {
-        return
-    }
+    if (event.request.method !== "GET") return
 
     // HTML ------------------------------------------------------------
     if (isHtmlRequest(event.request)) {
         event.respondWith(
-            networkFallbackToCache(event).then((cachedResponse) => {
+            (() => {
+                const cachedResponse = networkFallbackToCache(event)
                 if (cachedResponse) {
                     return cachedResponse
                 }
@@ -77,7 +73,7 @@ self.addEventListener("fetch", (event) => {
                         Location: START_URL,
                     },
                 })
-            })
+            })()
         )
     }
 
@@ -100,23 +96,25 @@ self.addEventListener("fetch", (event) => {
     // Loader requests -------------------------------------------------
     if (isLoaderRequest(event.request)) {
         event.respondWith(
-            networkThenCacheFallbackToCache(event, DYNAMIC_CACHE).then(
-                (cachedResponse) => {
-                    if (cachedResponse) {
-                        return cachedResponse
-                    }
-                    console.log(
-                        `Cache miss for ${event.request.url}, throwing offline response`
-                    )
-                    return new Response("You appear to be offline", {
-                        status: 503,
-                        statusText: "Network unavailable",
-                        headers: {
-                            "X-Remix-Catch": "yes",
-                        },
-                    })
+            (async () => {
+                const cachedResponse = await networkFallbackToCache(
+                    event,
+                    DYNAMIC_CACHE
+                )
+                if (cachedResponse) {
+                    return cachedResponse
                 }
-            )
+                console.log(
+                    `Cache miss for ${event.request.url}, throwing offline response`
+                )
+                return new Response("You appear to be offline", {
+                    status: 503,
+                    statusText: "Network unavailable",
+                    headers: {
+                        "X-Remix-Catch": "yes",
+                    },
+                })
+            })()
         )
     }
 })
@@ -138,36 +136,35 @@ function isLoaderRequest(request) {
 // Caching strategies ------------------------------------------------
 async function cacheFallbackToNetwork(event) {
     const request = event.request
-    return caches.match(request).then((cachedResponse) => {
-        if (cachedResponse) {
-            console.log(`Cache hit for ${request.url}`)
-            return cachedResponse
-        }
-        console.log(`Cache miss for ${request.url}`)
-        return fetch(request)
-    })
+    const cachedResponse = await caches.match(request)
+    if (cachedResponse) {
+        console.log(`Cache hit for ${request.url}`)
+        return cachedResponse
+    }
+    console.log(`Cache miss for ${request.url}, fetching from network`)
+    return fetch(request)
 }
 
 async function networkThenCacheFallbackToCache(event, cacheName) {
     const request = event.request
     const url = request.url
-    return fetch(request)
-        .then((networkResponse) => {
-            if (networkResponse.ok) {
-                console.log(`Caching ok response for ${url}`)
-                const clonedResponse = networkResponse.clone()
-                event.waitUntil(
-                    caches
-                        .open(cacheName)
-                        .then((cache) => cache.put(request, clonedResponse))
-                )
-            }
+    const networkResponse = await fetch(request)
+    try {
+        if (networkResponse.ok) {
+            console.log(`Network hit for ${url}, caching in ${cacheName}`)
+            const clonedResponse = networkResponse.clone()
+            event.waitUntil(
+                (() => {
+                    const openCache = caches.open(cacheName)
+                    cache.put(openCache, clonedResponse)
+                })()
+            )
             return networkResponse
-        })
-        .catch((error) => {
-            console.log(`Network fail for ${url}:`, error)
-            return caches.match(request)
-        })
+        }
+    } catch (error) {
+        console.log(`Network fail for ${url}:`, error)
+        return caches.match(request)
+    }
 }
 
 async function networkFallbackToCache(event) {
@@ -182,25 +179,25 @@ async function networkFallbackToCache(event) {
 async function cacheFallbackToNetworkThenCache(event, cacheName) {
     const request = event.request
     const url = request.url
-    return caches.match(request).then((cachedResponse) => {
-        if (cachedResponse) {
-            console.log(`Cache hit for ${url}`)
-            return cachedResponse
-        }
-        console.log(`Cache miss for ${url}`)
-        return fetch(request).then((networkResponse) => {
-            if (networkResponse.ok) {
-                console.log(`Caching ok response for ${url}`)
-                const clonedResponse = networkResponse.clone()
-                event.waitUntil(
-                    caches
-                        .open(cacheName)
-                        .then((cache) => cache.put(request, clonedResponse))
-                )
-            }
-            return networkResponse
-        })
-    })
+    const cachedResponse = await caches.match(request)
+    if (cachedResponse) {
+        console.log(`Cache hit for ${url}`)
+        return cachedResponse
+    }
+
+    console.log(`Cache miss for ${url}`)
+    const networkResponse = await fetch(request)
+    if (networkResponse.ok) {
+        console.log(`Caching ok response for ${url}`)
+        const clonedResponse = networkResponse.clone()
+        event.waitUntil(
+            (async () => {
+                const openedCache = await caches.open(cacheName)
+                await openedCache.put(request, clonedResponse)
+            })()
+        )
+    }
+    return networkResponse
 }
 
 // Parse URLs from imported manifest ---------------------------------
@@ -216,3 +213,27 @@ function parseUrlsFromManifest(manifest) {
     })
     return [...modules, ...chunks, manifest.url]
 }
+
+// Handling the push event in the service worker - https://developers.google.com/web/ilt/pwa/introduction-to-push-notifications
+self.addEventListener("push", function (e) {
+    const pushMessage = JSON.parse(e.data.text())
+
+    var options = {
+        body: pushMessage.body,
+        icon: "snippie-logo.png",
+        vibrate: [100, 50, 100],
+        data: {
+            dateOfArrival: Date.now(),
+            href: pushMessage.href,
+        },
+        actions: [
+            {
+                action: "explore",
+                title: "Explore the changes",
+                icon: "snippie-logo.png",
+            },
+            { action: "close", title: "Close", icon: "snippie-logo.png" },
+        ],
+    }
+    e.waitUntil(self.registration.showNotification(pushMessage.title, options))
+})
