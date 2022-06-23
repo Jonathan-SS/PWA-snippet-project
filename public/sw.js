@@ -101,6 +101,7 @@ self.addEventListener("fetch", (event) => {
                     event,
                     DYNAMIC_CACHE
                 )
+                console.log(cachedResponse)
                 if (cachedResponse) {
                     return cachedResponse
                 }
@@ -154,9 +155,9 @@ async function networkThenCacheFallbackToCache(event, cacheName) {
             console.log(`Network hit for ${url}, caching in ${cacheName}`)
             const clonedResponse = networkResponse.clone()
             event.waitUntil(
-                (() => {
-                    const openCache = caches.open(cacheName)
-                    cache.put(openCache, clonedResponse)
+                (async () => {
+                    const openCache = await caches.open(cacheName)
+                    openCache.put(request, clonedResponse)
                 })()
             )
             return networkResponse

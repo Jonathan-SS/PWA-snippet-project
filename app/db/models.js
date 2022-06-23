@@ -53,6 +53,9 @@ const userSchema = new Schema({
         type: String,
         required: [true, "Gotta have a password"],
     },
+    favoriteSnippets: {
+        type: Array,
+    },
     subscription: {
         type: Array,
         default: [
