@@ -65,6 +65,20 @@ export default function CreateSnippet() {
                             : " rounded-lg  px-2 dark:bg-gray-700 resize-none bg-blue-600 text-white")
                     }
                 />
+                <label
+                    htmlFor="visibility"
+                    className="block mt-3 pb-2 text-xl font-semibold"
+                >
+                    Public or private snippet?
+                </label>
+                <select
+                    name="visibility"
+                    className="text-white dark:bg-gray-700 bg-blue-600"
+                    defaultValue={true}
+                >
+                    <option value={true}>Public</option>
+                    <option value={false}>Private</option>
+                </select>
 
                 <label
                     htmlFor="languageTag"
@@ -97,20 +111,6 @@ export default function CreateSnippet() {
                     <option value="cs">C#</option>
                     <option value="c++">C++</option>
                     <option value="python">Python</option>
-                </select>
-                <label
-                    htmlFor="visibility"
-                    className="block mt-3 pb-2 text-xl font-semibold"
-                >
-                    Public or private snippet?
-                </label>
-                <select
-                    name="visibility"
-                    className="text-white dark:bg-gray-700 bg-blue-600"
-                    defaultValue={true}
-                >
-                    <option value={true}>Public</option>
-                    <option value={false}>Private</option>
                 </select>
 
                 <label

@@ -1,10 +1,12 @@
 import { PrivateIcon, PublicIcon, StarIcon } from "~/components/Icons"
 import { NavLink } from "remix"
+import { useAccount } from "~/hooks/useAccount"
 
 export default function SnippetListItem({ snippet, languageTag, isFavorite }) {
     const dateAdded = new Date(snippet.dateAdded).toLocaleDateString("da-DK", {
         dateStyle: "long",
     })
+    const loggedIn = useAccount()
 
     const listItemStyles =
         "rounded-lg   bg-blue-800 dark:bg-gray-800 p-3 mb-1 min-w-300-px hover:bg-blue-600 dark:hover:bg-gray-700 "
@@ -27,8 +29,7 @@ export default function SnippetListItem({ snippet, languageTag, isFavorite }) {
             </p>
             <div className="flex justify-between mt-1">
                 <p className=" text-white dark:text-gray-300">{dateAdded}</p>
-
-                <StarIcon fill={isFavorite} />
+                {loggedIn && <StarIcon fill={isFavorite} />}
             </div>
         </NavLink>
     )

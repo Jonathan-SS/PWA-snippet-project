@@ -43,17 +43,19 @@ export async function action({ request }) {
     const description = form.get("description")
     const snippet = form.get("snippet")
     const snippetId = form.get("snippetId")
+    const visibility = form.get("visibility")
     const db = await connectDb()
 
     try {
-        const test = await db.models.Snippet.findOneAndUpdate(
+        await db.models.Snippet.findOneAndUpdate(
             { _id: snippetId },
             {
                 $set: {
-                    title: title,
-                    languageTag: languageTag,
-                    description: description,
-                    snippet: snippet,
+                    title,
+                    languageTag,
+                    description,
+                    snippet,
+                    visibility,
                 },
                 $currentDate: { lastModified: true },
             }
@@ -67,7 +69,7 @@ export async function action({ request }) {
         const url = new URL(request.url)
 
         // Sent push notification, snippet has been updated
-        const testFetch = await fetch(`${url.origin}/notificationService`, {
+        await fetch(`${url.origin}/notificationService`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -120,6 +122,20 @@ export default function CreateSnippet() {
                             : " rounded-lg px-2 bg-blue-600 text-white   dark:bg-gray-700"
                     }
                 />
+                <label
+                    htmlFor="visibility"
+                    className="block mt-3 pb-2 text-xl font-semibold"
+                >
+                    Public or private snippet?
+                </label>
+                <select
+                    name="visibility"
+                    className="text-white dark:bg-gray-700 bg-blue-600"
+                    defaultValue={snippetToUpdate.visibility}
+                >
+                    <option value={true}>Public</option>
+                    <option value={false}>Private</option>
+                </select>
 
                 <label
                     htmlFor="languageTag"

@@ -165,29 +165,38 @@ export default function SnippetPage() {
                     <p>Date: {displayDate}</p>
                     <p>Language: {snippet.languageTag}</p>
                 </div>
-
-                <Form
-                    method="post"
-                    className=" flex items-center h-fit bg-blue-800 hover:bg-blue-600 dark:bg-gray-800 dark:hover:bg-gray-700 rounded-lg px-2 py-1"
-                >
-                    <input type="hidden" name="snippetId" value={snippet._id} />
-                    <input
-                        type="hidden"
-                        name="_action"
-                        value="favoriteToggle"
-                    />
-                    <input type="hidden" name="isFavorite" value={isFavorite} />
-                    <button
-                        type="submit"
-                        name="toggleFavorite"
-                        title="Toggle Favorite"
+                {loggedIn && (
+                    <Form
+                        method="post"
+                        className=" flex items-center h-fit bg-blue-800 hover:bg-blue-600 dark:bg-gray-800 dark:hover:bg-gray-700 rounded-lg px-2 py-1"
                     >
-                        <StarIcon
-                            fill={isFavorite}
-                            className="w-6 h-6 stroke-yellow-500"
+                        <input
+                            type="hidden"
+                            name="snippetId"
+                            value={snippet._id}
                         />
-                    </button>
-                </Form>
+                        <input
+                            type="hidden"
+                            name="_action"
+                            value="favoriteToggle"
+                        />
+                        <input
+                            type="hidden"
+                            name="isFavorite"
+                            value={isFavorite}
+                        />
+                        <button
+                            type="submit"
+                            name="toggleFavorite"
+                            title="Toggle Favorite"
+                        >
+                            <StarIcon
+                                fill={isFavorite}
+                                className="w-6 h-6 stroke-yellow-500"
+                            />
+                        </button>
+                    </Form>
+                )}
 
                 {snippet.userId == userId ? (
                     <Link
