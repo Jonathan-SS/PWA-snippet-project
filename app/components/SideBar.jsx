@@ -61,7 +61,7 @@ export default function SideBar({ languages }) {
                             <NavLink
                                 to="/snippets/mysnippets"
                                 className={({ isActive }) =>
-                                    accentLinkStyles +
+                                    linkStyles +
                                     (isActive ? " dark:bg-gray-600 pr-4" : "")
                                 }
                             >
