@@ -101,7 +101,7 @@ self.addEventListener("fetch", (event) => {
                     event,
                     DYNAMIC_CACHE
                 )
-                console.log(cachedResponse)
+
                 if (cachedResponse) {
                     return cachedResponse
                 }

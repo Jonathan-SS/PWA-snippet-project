@@ -3,21 +3,18 @@
         "title": "MonGoose REMIX Loader",
         "languageTag": "javascript",
         "snippet": "export async function loader() {\n  const db = await connectDb();\n  const snippets = await db.models.Snippet.find();\n\n  return snippets;\n}",
-        "description": "Snippet for loading data using mongoose in remix",
-        "favorite": true
+        "description": "Snippet for loading data using mongoose in remix"
     },
     {
         "title": "monGoose find and update",
         "languageTag": "javascript",
         "snippet": "export async function action({ request }) {\n  const form = await request.formData();\n  const db = await connectDb();\n  try {\n    await db.models.Snippet.findOneAndUpdate(\n      { _id: snippetId },\n      { \n        $set: { title: 'title', },\n        $currentDate: { lastModified: true },\n      }\n    );\n    return null;\n  } catch (error) {\n    console.log(error);\n    return json(\n      { errors: error.errors, values: Object.fromEntries(form) },\n      { status: 400 }\n    );\n  }\n}",
-        "description": "snippet for finding and update one document using mongoose in REMIX ",
-        "favorite": false
+        "description": "snippet for finding and update one document using mongoose in REMIX "
     },
     {
         "title": "PHP test",
         "languageTag": "php",
         "snippet": "$result = $mysqli->query('SELECT * FROM students');\nwhile ($row = $result->fetch_assoc()) {\n\techo $row['name'] . '<br>';\n}",
-        "description": "PHP test snippet",
-        "favorite": false
+        "description": "PHP test snippet"
     }
 ]

@@ -69,6 +69,19 @@ export default function SideBar({ languages }) {
                             </NavLink>
                         </li>
                     )}
+                    {loggedIn && (
+                        <li>
+                            <NavLink
+                                to="/snippets/favorites"
+                                className={({ isActive }) =>
+                                    linkStyles +
+                                    (isActive ? " dark:bg-gray-600 pr-4" : "")
+                                }
+                            >
+                                Favorite snippets
+                            </NavLink>
+                        </li>
+                    )}
                     <li>
                         <NavLink
                             to="/snippets/all"

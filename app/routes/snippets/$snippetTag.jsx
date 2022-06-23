@@ -15,8 +15,10 @@ export async function loader({ params, request }) {
     const title = url.searchParams.get("title")
     const sort = url.searchParams.get("sort")
     const languageTag = params.snippetTag
-
+    console.info(sort)
     const sharedQuery = { $or: [{ visibility: true }, { userId }] }
+
+    //const favorites = user?.favoriteSnippets.includes(snippet.id)
 
     // Find all public and private snippets that matches with userID
     // if user is not logged in, only public snippets are shown, e.g userId resolves to undefined
@@ -30,9 +32,38 @@ export async function loader({ params, request }) {
                               {
                                   title: { $regex: new RegExp(title, "i") },
                               },
+                              {
+                                  _id: { $in: user.favoriteSnippets },
+                              },
                           ],
                       }
                     : sharedQuery
+            ).sort({ [sort]: -1 }),
+            user: user,
+        }
+    if (languageTag === "favorites")
+        return {
+            snippets: await db.models.Snippet.find(
+                title
+                    ? {
+                          $and: [
+                              sharedQuery,
+                              {
+                                  title: { $regex: new RegExp(title, "i") },
+                              },
+                              {
+                                  _id: { $in: user.favoriteSnippets },
+                              },
+                          ],
+                      }
+                    : {
+                          $and: [
+                              sharedQuery,
+                              {
+                                  _id: { $in: user.favoriteSnippets },
+                              },
+                          ],
+                      }
             ).sort({ [sort]: -1 }),
             user: user,
         }
@@ -104,7 +135,7 @@ export default function Index() {
                         name="title"
                         placeholder="Search snippets..."
                     />
-                    <button type="submit" name="search" title="Search">
+                    <button type="submit" title="Search">
                         <SearchIcon />
                     </button>
                 </Form>
@@ -115,16 +146,14 @@ export default function Index() {
                     >
                         <option value="updatedAt">Last updated</option>
                         <option value="title">Title</option>
-                        <option value="isFavorite">Favorites</option>
                         <option value="createdAt">Date added</option>
                     </select>
                     <button
                         className="ml-3 dark:bg-gray-800 dark:hover:bg-gray-700 px-3 rounded-lg py-1 bg-blue-800 hover:bg-blue-600 text-white "
                         type="submit"
-                        name="sort"
                         title="Sort"
                     >
-                        Sort
+                        Sort snippets
                     </button>
                 </Form>
             </div>
