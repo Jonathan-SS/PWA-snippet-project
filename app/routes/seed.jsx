@@ -39,6 +39,7 @@ export default function Seed() {
                 <div className=" flex justify-center mt-16 gap-8">
                     <Link to="/snippets/all">
                         <button
+                            name="noSeed"
                             to="/snippets/all"
                             className="text-xl text-white bg-red-600 hover:bg-red-800 rounded-lg px-4 py-2"
                         >

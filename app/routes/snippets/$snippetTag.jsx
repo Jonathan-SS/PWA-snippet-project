@@ -93,7 +93,7 @@ export default function Index() {
                         name="title"
                         placeholder="Search snippets..."
                     />
-                    <button type="submit">
+                    <button type="submit" name="search" title="Search">
                         <SearchIcon />
                     </button>
                 </Form>
@@ -110,6 +110,8 @@ export default function Index() {
                     <button
                         className="ml-3 dark:bg-gray-800 dark:hover:bg-gray-700 px-3 rounded-lg py-1 bg-blue-800 hover:bg-blue-600 text-white "
                         type="submit"
+                        name="sort"
+                        title="Sort"
                     >
                         Sort
                     </button>

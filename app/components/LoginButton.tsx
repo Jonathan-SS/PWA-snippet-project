@@ -13,6 +13,7 @@ export default function LoginButton() {
                     type="submit"
                     name="logout"
                     className={LoginButtonStyle}
+                    title="Logout button"
                 >
                     Logout
                 </button>

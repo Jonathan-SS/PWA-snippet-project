@@ -171,7 +171,11 @@ export default function SnippetPage() {
                         name="isFavorite"
                         value={snippet.favorite}
                     />
-                    <button type="submit">
+                    <button
+                        type="submit"
+                        name="toggleFavorite"
+                        title="Toggle Favorite"
+                    >
                         <StarIcon
                             fill={snippet.favorite}
                             className="w-6 h-6 stroke-yellow-500"
@@ -199,7 +203,12 @@ export default function SnippetPage() {
                             value={snippet._id}
                         />
                         <input type="hidden" name="_action" value="delete" />
-                        <button className=" text-white" type="submit">
+                        <button
+                            className="text-white"
+                            type="submit"
+                            name="deleteSnippet"
+                            title="Delete Snippet"
+                        >
                             Delete
                         </button>
                     </Form>
@@ -211,6 +220,8 @@ export default function SnippetPage() {
                             <button
                                 className=" text-white ml-4 flex items-center h-fit bg-blue-800 hover:bg-blue-600 dark:bg-gray-800 dark:hover:bg-gray-700 rounded-lg px-2 py-1"
                                 onClick={unSubToSnip}
+                                name="unsubscribeToSnippet"
+                                title="Unsubscribe To Snippet"
                             >
                                 Unsubscribe to snippet
                             </button>
@@ -218,6 +229,8 @@ export default function SnippetPage() {
                             <button
                                 className="text-white ml-4 flex items-center h-fit bg-blue-800 hover:bg-blue-600 dark:bg-gray-800 dark:hover:bg-gray-700 rounded-lg px-2 py-1"
                                 onClick={subToSnip}
+                                name="subscribeToSnippet"
+                                title="Subscribe To Snippet"
                             >
                                 Subscribe to snippet
                             </button>
@@ -232,6 +245,8 @@ export default function SnippetPage() {
             <div className="relative">
                 {copyState ? (
                     <button
+                        name="copyToClipboard"
+                        title="Copy to clipboard"
                         onClick={(e) => {
                             navigator.clipboard.writeText(snippet.snippet)
                         }}

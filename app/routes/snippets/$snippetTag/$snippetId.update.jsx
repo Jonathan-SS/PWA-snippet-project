@@ -208,6 +208,8 @@ export default function CreateSnippet() {
                     value={snippetToUpdate._id}
                 />
                 <button
+                    name="updateSnippet"
+                    title="Update Snippet"
                     type="submit"
                     className=" dark:hover:bg-gray-600 dark:bg-gray-700 px-7 py-2 rounded-lg mt-3 text-xl font-semibold hover:bg-blue-600 bg-blue-800 text-white  "
                 >

@@ -124,6 +124,7 @@ export default function Login() {
                     type="submit"
                     name="login"
                     className=" dark:hover:bg-gray-600 dark:bg-gray-700 px-7 py-2 rounded-lg mt-3 text-xl font-semibold bg-blue-800 text-white  hover:bg-blue-600"
+                    title="Login button"
                 >
                     Login
                 </button>
@@ -136,7 +137,11 @@ export default function Login() {
                 >
                     Don't have a user yet?
                 </label>
-                <button className=" dark:hover:bg-gray-600 dark:bg-gray-700 px-7 py-2 rounded-lg text-xl font-semibold bg-blue-800 text-white  hover:bg-blue-600">
+                <button
+                    name="createUser"
+                    title="Create new user"
+                    className=" dark:hover:bg-gray-600 dark:bg-gray-700 px-7 py-2 rounded-lg text-xl font-semibold bg-blue-800 text-white  hover:bg-blue-600"
+                >
                     Create user here
                 </button>
             </Form>

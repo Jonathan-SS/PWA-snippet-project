@@ -163,6 +163,8 @@ export default function CreateSnippet() {
                 <br />
                 <button
                     type="submit"
+                    name="saveSnippet"
+                    title="Save Snippet"
                     className=" dark:hover:bg-gray-600 dark:bg-gray-700 px-7 py-2 rounded-lg mt-3 text-xl font-semibold bg-blue-800 text-white  hover:bg-blue-600"
                 >
                     Save snippet
