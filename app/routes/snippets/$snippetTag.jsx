@@ -9,6 +9,7 @@ export async function loader({ params, request }) {
     const db = await connectDb()
     const session = await getUserSession(request.headers.get("Cookie"))
     const userId = session.get("userId")
+    const user = await db.models.user.findById(userId)
 
     const url = new URL(request.url)
     const title = url.searchParams.get("title")
@@ -20,50 +21,60 @@ export async function loader({ params, request }) {
     // Find all public and private snippets that matches with userID
     // if user is not logged in, only public snippets are shown, e.g userId resolves to undefined
     if (languageTag === "all")
-        return await db.models.Snippet.find(
+        return {
+            snippets: await db.models.Snippet.find(
+                title
+                    ? {
+                          $and: [
+                              sharedQuery,
+                              {
+                                  title: { $regex: new RegExp(title, "i") },
+                              },
+                          ],
+                      }
+                    : sharedQuery
+            ).sort({ [sort]: -1 }),
+            user: user,
+        }
+
+    if (languageTag === "mysnippets") {
+        requireUserSession(request)
+        return {
+            snippets: await db.models.Snippet.find(
+                title
+                    ? {
+                          title: { $regex: new RegExp(title, "i") },
+                          userId: userId,
+                      }
+                    : {
+                          userId: userId,
+                      }
+            ).sort({ [sort]: -1 }),
+            user: user,
+        }
+    }
+    // Search in selected snippet languages,
+    return {
+        snippets: await db.models.Snippet.find(
             title
                 ? {
                       $and: [
                           sharedQuery,
                           {
                               title: { $regex: new RegExp(title, "i") },
+                              languageTag,
                           },
                       ],
                   }
-                : sharedQuery
-        ).sort({ [sort]: -1 })
-
-    if (languageTag === "mysnippets") {
-        requireUserSession(request)
-        return await db.models.Snippet.find(
-            title
-                ? {
-                      title: { $regex: new RegExp(title, "i") },
-                      userId: userId,
-                  }
-                : {
-                      userId: userId,
-                  }
-        ).sort({ [sort]: -1 })
+                : { ...sharedQuery, languageTag }
+        ).sort({ [sort]: -1 }),
+        user: user,
     }
-    // Search in selected snippet languages,
-    return await db.models.Snippet.find(
-        title
-            ? {
-                  $and: [
-                      sharedQuery,
-                      {
-                          title: { $regex: new RegExp(title, "i") },
-                          languageTag,
-                      },
-                  ],
-              }
-            : { ...sharedQuery, languageTag }
-    ).sort({ [sort]: -1 })
 }
 
 export default function Index() {
-    const snippets = useLoaderData() || []
+    const loaderData = useLoaderData() || {}
+    console.log(loaderData.snippets)
     const submit = useSubmit()
     const languageTag = useParams().snippetTag
 
@@ -104,7 +115,7 @@ export default function Index() {
                     >
                         <option value="updatedAt">Last updated</option>
                         <option value="title">Title</option>
-                        <option value="favorite">Favorites</option>
+                        <option value="isFavorite">Favorites</option>
                         <option value="createdAt">Date added</option>
                     </select>
                     <button
@@ -120,15 +131,18 @@ export default function Index() {
             <div className="lg:flex gap-8">
                 <div className="my-8 overflow-y-scroll scrollbar-hide lg:max-w-sm basis-1/6 flex-grow">
                     <ul className="list-none gap-1 flex flex-shrink-0 flex-nowrap  md:flex-col">
-                        {snippets.map((snippet) => (
+                        {loaderData?.snippets.map((snippet) => (
                             <SnippetListItem
                                 key={snippet._id}
                                 snippet={snippet}
+                                isFavorite={loaderData.user?.favoriteSnippets.includes(
+                                    snippet._id
+                                )}
                                 languageTag={languageTag}
                             />
                         ))}
 
-                        {snippets.length === 0 && (
+                        {loaderData?.snippets.length === 0 && (
                             <h2>No snippets found at all</h2>
                         )}
                     </ul>

@@ -12,7 +12,6 @@ import { getUserSession } from "../../../sessions.server"
 export async function loader({ params, request }) {
     const session = await getUserSession(request.headers.get("Cookie"))
     const userId = session.get("userId")
-
     const db = await connectDb()
     const snippet = await db.models.Snippet.findById(params.snippetId)
     const user = await db.models.user.findById(userId)
@@ -24,20 +23,31 @@ export async function loader({ params, request }) {
             }
         )
     }
-    return json({ snippet: snippet, userId: userId, user: user ? user : null })
+
+    const isFavorite = user?.favoriteSnippets.includes(snippet.id)
+
+    return json({
+        snippet: snippet,
+        userId: userId,
+        user: user ? user : null,
+        isFavorite,
+    })
 }
 
-export async function action({ request }) {
+export async function action({ request, params }) {
+    const session = await getUserSession(request.headers.get("Cookie"))
     const form = await request.formData()
     const _action = form.get("_action")
     const snippetId = form.get("snippetId")
     const db = await connectDb()
-    const { snippet, userId, user } = useLoaderData()
+    const userId = session.get("userId")
+    const snippet = await db.models.Snippet.findById(params.snippetId)
+    const user = await db.models.user.findById(userId)
 
     switch (_action) {
         case "favoriteToggle":
-            const mappedFavorites = user?.favoriteSnippets.map((fav) => fav)
-            if (mappedFavorites.includes(snippet.id)) {
+            // const mappedFavorites = user?.favoriteSnippets.map((fav) => fav)
+            if (user?.favoriteSnippets.includes(snippet.id)) {
                 await db.models.user.updateOne(
                     { _id: userId },
                     {
@@ -63,7 +73,7 @@ export async function action({ request }) {
 }
 
 export default function SnippetPage() {
-    const { snippet, userId, user } = useLoaderData()
+    const { snippet, userId, user, isFavorite } = useLoaderData()
     const [subs, setSub] = useState(false)
     const dateAdded = new Date(snippet.dateAdded)
     const displayDate = dateAdded.toLocaleDateString("da-DK", {
@@ -166,18 +176,14 @@ export default function SnippetPage() {
                         name="_action"
                         value="favoriteToggle"
                     />
-                    <input
-                        type="hidden"
-                        name="isFavorite"
-                        value={snippet.favorite}
-                    />
+                    <input type="hidden" name="isFavorite" value={isFavorite} />
                     <button
                         type="submit"
                         name="toggleFavorite"
                         title="Toggle Favorite"
                     >
                         <StarIcon
-                            fill={snippet.favorite}
+                            fill={isFavorite}
                             className="w-6 h-6 stroke-yellow-500"
                         />
                     </button>
