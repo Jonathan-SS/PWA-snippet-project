@@ -18,8 +18,6 @@ export async function loader({ params, request }) {
     console.info(sort)
     const sharedQuery = { $or: [{ visibility: true }, { userId }] }
 
-    //const favorites = user?.favoriteSnippets.includes(snippet.id)
-
     // Find all public and private snippets that matches with userID
     // if user is not logged in, only public snippets are shown, e.g userId resolves to undefined
     if (languageTag === "all")
