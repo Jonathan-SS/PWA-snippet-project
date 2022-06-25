@@ -257,7 +257,7 @@ export default function SnippetPage() {
             <h2 className=" mt-2 text-xl font-semibold">Description</h2>
             <p>{snippet.description}</p>
             <h2 className=" text-xl font-semibold mt-4 mb-2">Snippet</h2>
-            <div className="relative">
+            <div className="relative bg-[#282c34] p-2">
                 {copyState ? (
                     <button
                         name="copyToClipboard"
@@ -265,7 +265,7 @@ export default function SnippetPage() {
                         onClick={(e) => {
                             navigator.clipboard.writeText(snippet.snippet)
                         }}
-                        className=" absolute  right-0 p-3 group"
+                        className="absolute right-0 p-3 group"
                     >
                         <div className="flex text-sm items-center ">
                             <p className=" hidden group-hover:block text-gray-300 group-active:hidden mr-1 bg-gray-600 rounded-lg px-2 ">
