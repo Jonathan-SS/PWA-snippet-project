@@ -1,19 +1,19 @@
 import connectDb from "~/db/connectDb.server.js"
 import styles from "~/tailwind.css"
 import highStyles from "highlight.js/styles/atom-one-dark.css"
-import { NotFound } from "./components/Icons/NotFound.jsx"
 import {
+    Link,
     Links,
     LiveReload,
     Meta,
     Outlet,
     Scripts,
     ScrollRestoration,
-    useLoaderData,
     useCatch,
-    Link,
+    useLoaderData,
 } from "remix"
 
+import { NotFound } from "./components/Icons/NotFound.jsx"
 import SideBar from "./components/SideBar"
 import { getUserSession } from "./sessions.server.js"
 
@@ -85,21 +85,27 @@ export async function loader({ request }) {
     const db = await connectDb()
     const session = await getUserSession(request.headers.get("Cookie"))
     const userId = session.get("userId")
+    console.log('userId: ', userId);
 
     // Return all languages from snippets that the user, has access to (includes public and private)
-    return await db.models.Snippet.find({
+    const languages = await db.models.Snippet.find({
         $or: [{ visibility: true }, { userId }],
     }).distinct("languageTag")
+
+    return {
+        isServerLoggedIn: userId !== undefined,
+        languages,
+    }
 }
 
 export default function App() {
-    const languages = useLoaderData() || []
+    const {languages, isServerLoggedIn} = useLoaderData() || []
 
     return (
         <Layout>
-            <SideBar languages={languages} />
+            <SideBar languages={languages} isServerLoggedIn={isServerLoggedIn} />
             <main className="p-4 overflow-hidden md:overflow-auto col-span-4">
-                <Outlet />
+                <Outlet context={{isServerLoggedIn}}/>
             </main>
         </Layout>
     )
