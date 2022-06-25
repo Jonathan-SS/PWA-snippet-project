@@ -1,6 +1,6 @@
-import { PrivateIcon, PublicIcon, StarIcon } from "~/components/Icons"
-import { NavLink } from "remix"
+import { PublicIcon, StarIcon } from "~/components/Icons"
 import { useAccount } from "~/hooks/useAccount"
+import { NavLink } from "remix"
 
 export default function SnippetListItem({ snippet, languageTag, isFavorite }) {
     const dateAdded = new Date(snippet.dateAdded).toLocaleDateString("da-DK", {

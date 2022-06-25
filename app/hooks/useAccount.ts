@@ -6,7 +6,7 @@ export type OutletContext = { isServerLoggedIn: boolean }
 export function useAccount(isServerLoggedIn?: boolean): boolean {
     const outlet = useOutletContext<OutletContext>()
     const [loggedIn, setLoggedIn] = useState<boolean>(
-        outlet !== null ? outlet.isServerLoggedIn : false
+        outlet !== null ? outlet?.isServerLoggedIn : false
     )
 
     useEffect(() => {
@@ -25,5 +25,5 @@ export function useAccount(isServerLoggedIn?: boolean): boolean {
         })()
     }, [loggedIn])
 
-    return isServerLoggedIn ? isServerLoggedIn : loggedIn
+    return isServerLoggedIn !== undefined ? isServerLoggedIn : loggedIn
 }

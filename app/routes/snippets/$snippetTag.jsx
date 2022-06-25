@@ -15,7 +15,6 @@ export async function loader({ params, request }) {
     const title = url.searchParams.get("title")
     const sort = url.searchParams.get("sort")
     const languageTag = params.snippetTag
-    console.info(sort)
     const sharedQuery = { $or: [{ visibility: true }, { userId }] }
 
     // Find all public and private snippets that matches with userID
