@@ -1,7 +1,13 @@
 import { useEffect, useState } from "react"
+import { useOutletContext } from "remix"
 
-export function useAccount(): boolean {
-    const [loggedIn, setLoggedIn] = useState<boolean>(false)
+export type OutletContext = { isServerLoggedIn: boolean }
+
+export function useAccount(isServerLoggedIn?: boolean): boolean {
+    const outlet = useOutletContext<OutletContext>()
+    const [loggedIn, setLoggedIn] = useState<boolean>(
+        outlet !== null ? outlet.isServerLoggedIn : false
+    )
 
     useEffect(() => {
         ;(async () => {
@@ -19,5 +25,5 @@ export function useAccount(): boolean {
         })()
     }, [loggedIn])
 
-    return loggedIn
+    return isServerLoggedIn ? isServerLoggedIn : loggedIn
 }

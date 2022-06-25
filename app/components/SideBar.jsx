@@ -11,10 +11,10 @@ const accentLinkStyles =
 const linkStyles =
     "capitalize flex items-center p-2 text-base font-normal rounded-lg hover:bg-blue-600 bg-blue-800 dark:bg-gray-800 text-white dark:hover:bg-gray-700"
 
-export default function SideBar({ languages }) {
+export default function SideBar({ languages, isServerLoggedIn }) {
     const [isOnLine, setIsOnLine] = useState(true)
 
-    const loggedIn = useAccount()
+    const loggedIn = useAccount(isServerLoggedIn)
 
     React.useEffect(() => {
         setIsOnLine(navigator.onLine)
@@ -41,7 +41,7 @@ export default function SideBar({ languages }) {
                     />
                     <div className="flex justify-between my-4">
                         <DarkmodeButton />
-                        <LoginButton />
+                        <LoginButton isLoggedIn={loggedIn}/>
                     </div>
                 </div>
                 <ul className="flex align-center overflow-x-scroll w-full scrollbar-hide gap-3 lg:block lg:space-y-2 ">

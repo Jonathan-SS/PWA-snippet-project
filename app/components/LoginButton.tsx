@@ -1,10 +1,11 @@
 import { Form, Link } from "remix"
+
 import { useAccount } from "../hooks/useAccount"
 
 const LoginButtonStyle =
     "p-2 font-normal rounded-lg hover:bg-blue-600 hover:text-white dark:hover:bg-gray-700"
-export default function LoginButton() {
-    const loggedIn = useAccount()
+export default function LoginButton({ isLoggedIn }) {
+    const loggedIn = useAccount(isLoggedIn)
 
     if (loggedIn) {
         return (
