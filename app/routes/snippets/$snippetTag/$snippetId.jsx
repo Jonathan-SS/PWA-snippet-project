@@ -75,7 +75,7 @@ export async function action({ request, params }) {
 
 export default function SnippetPage() {
     const { snippet, userId, user, isFavorite, isServerLoggedIn } =
-        useLoaderData()
+    useLoaderData()
     const [subs, setSub] = useState(false)
     const dateAdded = new Date(snippet.dateAdded)
     const displayDate = dateAdded.toLocaleDateString("da-DK", {
@@ -90,20 +90,19 @@ export default function SnippetPage() {
         setCopyState(true)
         async function checkSub() {
             const registration = await navigator.serviceWorker.getRegistration()
-            let subscription = await registration?.pushManager.getSubscription()
+            const subscription = await registration?.pushManager.getSubscription()
             const mappedEndpoints = user?.subscription.map(
                 (sub) => sub.endpoint
             )
+            const hasSubscription = snippet.subscribers.includes(userId) &&
+            mappedEndpoints.includes(subscription?.endpoint)
+            console.log('hasSubscription: ', hasSubscription);
 
-            if (
-                snippet.subscribers.includes(userId) &&
-                mappedEndpoints.includes(subscription?.endpoint)
-            ) {
-                setSub(true)
-            }
+            setSub(hasSubscription)
+            
         }
         checkSub()
-    }, [snippet.subscribers])
+    }, [snippet])
 
     async function unSubToSnip() {
         const SERVER_URL = `${location.origin}/unSubscriptionService`
