@@ -53,7 +53,6 @@ self.addEventListener("activate", (event) => {
 
 // FETCH -------------------------------------------------------------
 self.addEventListener("fetch", (event) => {
-    // We only want to handle GET requests
     if (event.request.method !== "GET") return
 
     // HTML ------------------------------------------------------------

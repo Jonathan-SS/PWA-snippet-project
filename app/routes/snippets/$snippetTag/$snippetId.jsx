@@ -31,6 +31,7 @@ export async function loader({ params, request }) {
         userId: userId,
         user: user ? user : null,
         isFavorite,
+        isServerLoggedIn: userId !== undefined,
     })
 }
 
@@ -73,7 +74,8 @@ export async function action({ request, params }) {
 }
 
 export default function SnippetPage() {
-    const { snippet, userId, user, isFavorite } = useLoaderData()
+    const { snippet, userId, user, isFavorite, isServerLoggedIn } =
+        useLoaderData()
     const [subs, setSub] = useState(false)
     const dateAdded = new Date(snippet.dateAdded)
     const displayDate = dateAdded.toLocaleDateString("da-DK", {
@@ -81,7 +83,7 @@ export default function SnippetPage() {
     })
     const [copyState, setCopyState] = useState(false)
     const languageTag = useParams().snippetTag
-    const loggedIn = useAccount()
+    const loggedIn = useAccount(isServerLoggedIn)
     const notiDenied = useNotification()
 
     useEffect(() => {
