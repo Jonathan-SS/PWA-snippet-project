@@ -29,9 +29,6 @@ export async function loader({ params, request }) {
                               {
                                   title: { $regex: new RegExp(title, "i") },
                               },
-                              {
-                                  _id: { $in: user.favoriteSnippets },
-                              },
                           ],
                       }
                     : sharedQuery
