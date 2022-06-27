@@ -79,7 +79,6 @@ export async function action({ request }) {
                     title: ` A snippet you subscribe to has been updated`,
                     body: `Click to see the latest changes on the snippet: ${title}`,
                     href: `/snippets/all/${snippetId}`,
-                    image: "/snippie.png",
                 },
                 subs: subs,
             }),

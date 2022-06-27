@@ -238,3 +238,10 @@ self.addEventListener("push", function (e) {
     }
     e.waitUntil(self.registration.showNotification(pushMessage.title, options))
 })
+
+self.addEventListener("notificationclick", (e) => {
+    let link = e.notification.data.href
+    if (e.action === "explore") {
+        clients.openWindow(link)
+    }
+})
